@@ -1065,8 +1065,10 @@ function generatePermalink(includeBlank = false) {
     }
   });
 
-  // Add logo parameter
-  rv += 'logo=' + encodeURIComponent(logo);
+  // Add logo parameter only if it's different from 'mtg'
+  if (logo !== 'mtg') {
+    rv += 'logo=' + encodeURIComponent(logo);
+  }
 
   return rv;
 }
