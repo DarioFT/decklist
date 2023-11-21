@@ -62,12 +62,12 @@ for card in cards["data"].values():
 
     # Make the colors shorter
     if ('colors' not in face): pass
-    elif len(face['colors']) > 1:      ocards[ocard]['c'] = 'F'    # gold
-    elif face['colors'] == ['White']:  ocards[ocard]['c'] = 'A'
-    elif face['colors'] == ['Blue']:   ocards[ocard]['c'] = 'B'
-    elif face['colors'] == ['Black']:  ocards[ocard]['c'] = 'C'
-    elif face['colors'] == ['Red']:    ocards[ocard]['c'] = 'D'
-    elif face['colors'] == ['Green']:  ocards[ocard]['c'] = 'E'
+    elif len(cards[card]['colors']) > 1:  ocards[ocard]['c'] = 'F'    # gold
+    elif cards[card]['colors'] == ['W']:  ocards[ocard]['c'] = 'A'
+    elif cards[card]['colors'] == ['U']:  ocards[ocard]['c'] = 'B'
+    elif cards[card]['colors'] == ['B']:  ocards[ocard]['c'] = 'C'
+    elif cards[card]['colors'] == ['R']:  ocards[ocard]['c'] = 'D'
+    elif cards[card]['colors'] == ['G']:  ocards[ocard]['c'] = 'E'
 
     if   'Land'     in face['types']:  ocards[ocard]['t'] = '1'
     elif 'Creature' in face['types']:  ocards[ocard]['t'] = '2'
@@ -76,8 +76,8 @@ for card in cards["data"].values():
     else:                              ocards[ocard]['t'] = '4'
 
     # Now try to deal with CMC
-    if 'convertedManaCost' not in face: ocards[ocard]['m'] = 99
-    else: ocards[ocard]['m'] = face['convertedManaCost']
+    if 'convertedManaCost' not in cards[card]: ocards[ocard]['m'] = 99
+    else: ocards[ocard]['m'] = cards[card]['convertedManaCost']
 
     # Add it into the file if the banned list isn't empty
     legality = getLegalities(face)
