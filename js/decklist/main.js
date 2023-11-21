@@ -1051,22 +1051,34 @@ function generateStandardDecklist(parsedInput) {
 }
 
 function generatePermalink(includeBlank = false) {
-  let rv = 'https://decklist.xyz/?';
+  let rv = 'https://decklist.xyz/';
 
   const logo = ($._GET && $._GET['logo']) ? $._GET['logo'] : 'mtg';
 
   const params = ['firstname', 'lastname', 'event', 'eventdate', 'eventlocation', 'deckmain', 'deckside', 'deckname', 'deckdesigner'];
+  let firstParam = true; // flag to track if any parameter has been appended
   params.forEach(function(param) {
     const field = '#' + param;
     const value = $(field).val();
 
     if (value !== undefined && (includeBlank || value.length > 0)) {
-      rv += param + '=' + encodeURIComponent(value) + '&';
+      if (firstParam) {
+        rv += '?'; // append ? before the first parameter
+        firstParam = false;
+      } else {
+        rv += '&'; // append & before subsequent parameters
+      }
+      rv += param + '=' + encodeURIComponent(value);
     }
   });
 
   // Add logo parameter only if it's different from 'mtg'
   if (logo !== 'mtg') {
+    if (firstParam) {
+      rv += '?';
+    } else {
+      rv += '&';
+    }
     rv += 'logo=' + encodeURIComponent(logo);
   }
 
