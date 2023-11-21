@@ -55,21 +55,26 @@ var Decklist = {
           unrecognized: [],
           unparseable: [],
         },
-        toSB = /^\s*Sideboard/, // Tappedout looks like MTGO, except sideboard begins with "Sideboard:"; Salvation, same, but no colon
-        in_sb = false;
+        toSB = /^\s*Sideboard/,
+        emptyLine = /^\s*$/,
+        in_sb = false,
+        hasMainCards = false;
+    
       // ensure list is actually a property of identified
       if (!identified.hasOwnProperty(list)) {
         list = 'main';
       }
-
+    
       // main parsing loop
       linesLoop: for (var i = 0; i < lines.length; i++) {
         var line = lines[i];
-        // check for sideboard switch statement
-        if (list === 'main' && toSB.test(line)) {
+    
+        // check for sideboard switch statement or empty line after main cards
+        if (list === 'main' && (toSB.test(line) || (emptyLine.test(line) && hasMainCards))) {
           in_sb = true;
           continue;
         }
+    
         // check lines against passed regexes for cards
         for (var j = 0; j < regexes.length; j++) {
           let re = regexes[j];
@@ -96,6 +101,11 @@ var Decklist = {
               identified['unrecognized'].push(encodedCardName);
             }
           }
+           // Mark that we have encountered main deck cards
+          if (list === 'main') {
+            hasMainCards = true;
+          }
+
           // switch to sideboard if sideboard switch has already been found
           if (list === 'main' && in_sb) {
             list = 'side';
