@@ -7,7 +7,7 @@ import json
 # c (color) = White = A, Blue = B, Black = C, Red = D, Green = E, Gold = F, Artifact = G , Split = S, Unknown = X, Land = Z
 # m (CMC) = N  (Split = 98, Land = 99)
 # n (actual name) = 'true name nemesis' to 'True Name Nemesis'
-# t (type) = 1 = land, 2 = creature, 3 = instant or sorcery 4 = other
+# t (type) = 1 = land, 2 = creature, 3 = instant 4 = sorcery, 5 = other
 
 FORMATS = ('standard', 'modern', 'legacy')
 
@@ -72,8 +72,8 @@ for card in cards["data"].values():
     if   'Land'     in face['types']:  ocards[ocard]['t'] = '1'
     elif 'Creature' in face['types']:  ocards[ocard]['t'] = '2'
     elif 'Sorcery'  in face['types']:  ocards[ocard]['t'] = '3'
-    elif 'Instant'  in face['types']:  ocards[ocard]['t'] = '3'
-    else:                              ocards[ocard]['t'] = '4'
+    elif 'Instant'  in face['types']:  ocards[ocard]['t'] = '4'
+    else:                              ocards[ocard]['t'] = '5'
 
     # Now try to deal with CMC
     if 'convertedManaCost' not in face: ocards[ocard]['m'] = 99
