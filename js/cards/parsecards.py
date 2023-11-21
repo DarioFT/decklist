@@ -21,54 +21,6 @@ def getLegalities(face):
 
     return(banned)
 
-def processAdventureCard(card):
-    # Adventure cards typically have two sides; creature and Adventure
-    creature_side, adventure_side = card
-
-    # Use the creature side's name as the primary identifier
-    ocard = creature_side["name"].lower()
-    ocard = ocard.replace(u'\xc6', u'\xe6')  # Handle special characters
-
-    # Skip further processing if layout is token
-    if creature_side['layout'] == 'token':
-        return
-
-    # Initialize dictionary for this card
-    ocards[ocard] = {}
-
-    # Process color identity
-    if 'colorIdentity' in creature_side:
-        ocards[ocard]['colorIdentity'] = ''.join(creature_side['colorIdentity'])
-
-    # Process colors
-    if 'colors' in creature_side:
-        colors = creature_side['colors']
-        if len(colors) > 1:
-            ocards[ocard]['c'] = 'F'  # Gold for multicolored
-        else:
-            color_map = {'W': 'A', 'U': 'B', 'B': 'C', 'R': 'D', 'G': 'E'}
-            ocards[ocard]['c'] = color_map.get(colors[0], 'X')  # Default to 'X' if color not found
-
-    # Process type
-    if 'types' in creature_side:
-        type_map = {'Land': '1', 'Creature': '2', 'Sorcery': '3', 'Instant': '3'}
-        ocards[ocard]['t'] = type_map.get(creature_side['types'][0], '4')  # Default to '4' for other types
-
-    # Process mana cost and converted mana cost (CMC)
-    ocards[ocard]['manaCost'] = creature_side.get('manaCost', 'Unknown')
-    ocards[ocard]['cmc'] = creature_side.get('convertedManaCost', 99)
-
-    # Add legalities
-    legality = getLegalities(creature_side)
-    if legality != "":
-        ocards[ocard]['b'] = legality
-
-    # Add true name
-    ocards[ocard]['n'] = creature_side["name"]
-
-    # Indicate that this card has an Adventure aspect
-    ocards[ocard]['hasAdventure'] = True
-
 # Open the JSON file
 jsonfh = open("AtomicCards.json", "r")
 
@@ -86,12 +38,7 @@ for card in cards["data"].values():
     else:
         face = card[0] if card[0]['side'] == 'a' else card[1]
 
-    # Check if the card is an Adventure card
-    if 'layout' in face and face['layout'] == 'adventure':
-        processAdventureCard(card)
-        continue
-
-    is_flip = face["layout"] in ("transform", "modal_dfc")
+    is_flip = face["layout"] in ("transform", "modal_dfc", "adventure")
 
     # We're going to store them in lowercase
     ocard = face["faceName" if is_flip else "name"].lower()
