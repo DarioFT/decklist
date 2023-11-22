@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
 import json
+import unicodedata
 
 # Just FYI!
 # b (banned) = [sml] (standard, modern, legacy)
 # c (color) = White = A, Blue = B, Black = C, Red = D, Green = E, Gold = F, Artifact = G , Split = S, Unknown = X, Land = Z
 # m (CMC) = N  (Split = 98, Land = 99)
 # n (actual name) = 'true name nemesis' to 'True Name Nemesis'
-# t (type) = 1 = land, 2 = creature, 3 = instant 4 = sorcery, 5 = other
+# t (type) = 1 = land, 2 = creature, 3 = sorcery, 4 = instant, 5 = other
 
 FORMATS = ('standard', 'modern', 'legacy')
 
@@ -20,6 +21,11 @@ def getLegalities(face):
             banned = banned.replace(format[0].lower(), '')
 
     return(banned)
+
+def remove_accents(input_str):
+    """Removes accents from a given string."""
+    nfkd_form = unicodedata.normalize('NFKD', input_str)
+    return "".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
 # Open the JSON file
 jsonfh = open("AtomicCards.json", "r")
@@ -42,6 +48,9 @@ for card in cards["data"].values():
 
     # We're going to store them in lowercase
     ocard = face["faceName" if is_flip else "name"].lower()
+
+    # Remove accents from the card name
+    ocard = remove_accents(ocard)
 
     # Python's Unicode support sucks, as does everybodies.  Manually
     # replace the Ae to lower case

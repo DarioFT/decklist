@@ -921,6 +921,9 @@ function generateStandardDecklist(parsedInput) {
     }
   }*/
 
+  // Assume separateBasicLands is a checkbox in your form
+  const separateBasicLands = document.getElementById('separate-basic-lands').checked;
+
   // Add the deck to the decklist
   for (let column = 0, x = 82, y = 182; column < 2; column++) {
     dl.setFont('helvetica');
@@ -935,7 +938,8 @@ function generateStandardDecklist(parsedInput) {
       dl.line(122, 167, 183, 167);
     } else {
       dl.setFontSize(13);
-      dl.text('Main Deck Continued & Basic Lands:', 336, 149);
+      if (separateBasicLands) dl.text('Main Deck Continued & Basic Lands:', 336, 149);
+      else dl.text('Main Deck Continued:', 336, 149);
       dl.setFontSize(11);
       dl.text('# in deck:', 336, 166); // second row, main deck
       dl.line(336, 167, 386, 167);
@@ -949,16 +953,26 @@ function generateStandardDecklist(parsedInput) {
     const basicLands = ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest',
     'Snow-Covered Plains', 'Snow-Covered Island', 'Snow-Covered Swamp', 'Snow-Covered Mountain',
     'Snow-Covered Forest', 'Wastes'];
-  
-    // separating basic land cards from maindeck
-    const basicLandsFromMaindeck = maindeck.filter(card => basicLands.includes(card['n']));
-    const nonBasicLands = maindeck.filter(card => !basicLands.includes(card['n']));
-    
+
+    let basicLandsFromMaindeck = [];
+    let nonBasicLands = maindeck;
+
+    if (separateBasicLands) {
+      // Separating basic land cards from maindeck only if separateBasicLands is true
+      basicLandsFromMaindeck = maindeck.filter(card => basicLands.includes(card['n']));
+      nonBasicLands = maindeck.filter(card => !basicLands.includes(card['n']));
+    }
+
     let printDeck;
     if (column === 0) {
       printDeck = nonBasicLands;
     } else {
-      printDeck = [...nonBasicLands.slice(32), ...basicLandsFromMaindeck];
+      // Adjust logic based on separateBasicLands flag
+      if (separateBasicLands) {
+        printDeck = [...nonBasicLands.slice(32), ...basicLandsFromMaindeck];
+      } else {
+        printDeck = nonBasicLands.slice(32);
+      }
     }
     
     for (let j = 0, index = j; j < 32 && index < 44 && index < printDeck.length; j++, index++, y += 18) {

@@ -132,14 +132,30 @@ var Decklist = {
       // Accepts a card name string
       // Returns the card's object if found, or null if not found
       function getCard(name) {
+        // Convert the name to lowercase
         name = name.toLowerCase();
-        name = name.replace('\u00e6', 'ae');
+    
+        // First, try to find the card with the original name
         if (cards.hasOwnProperty(name)) {
-          return cards[name];
-        } else {
-          return null;
+            return cards[name];
+        } 
+    
+        // If not found, normalize by removing accents and try again
+        var normalized_name = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        if (cards.hasOwnProperty(normalized_name)) {
+            return cards[normalized_name];
         }
-      }
+    
+        // Replace specific characters as needed (e.g., æ)
+        normalized_name = normalized_name.replace('\u00e6', 'ae');
+        if (cards.hasOwnProperty(normalized_name)) {
+            return cards[normalized_name];
+        }
+    
+        // Return null if the card is not found
+        return null;
+    }
+    
     }
     // Adds a card object to a given deck list (new addition or updates an already-present quantity)
     // Accepts a deck list (array of card objects) and a card object
