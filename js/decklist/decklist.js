@@ -134,30 +134,33 @@ var Decklist = {
       function getCard(name) {
         // Convert the name to lowercase
         name = name.toLowerCase();
-
+    
         // Replace alternative separators for dual cards
-        name = name.replace(/\s*\/\s*/g, " // ");
+        name = name.replace(/\s*\/+\s*/g, " // ");
     
         // First, try to find the card with the original name
         if (cards.hasOwnProperty(name)) {
             return cards[name];
-        } 
+        }
     
-        // If not found, normalize by removing accents and try again
-        var normalized_name = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        // Function to perform normalization and replacement
+        function normalizeCardName(cardName) {
+            // Normalize by removing accents
+            cardName = cardName.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    
+            // Replace specific characters (e.g., æ)
+            return cardName.replace('\u00e6', 'ae');
+            // Add more replacements if needed
+        }
+    
+        // If not found, normalize the name and try again
+        let normalized_name = normalizeCardName(name);
         if (cards.hasOwnProperty(normalized_name)) {
             return cards[normalized_name];
         }
     
-        // Replace specific characters as needed (e.g., æ)
-        normalized_name = normalized_name.replace('\u00e6', 'ae');
-        if (cards.hasOwnProperty(normalized_name)) {
-            return cards[normalized_name];
-        }
-    
-        // Return null if the card is not found
         return null;
-    }
+      }    
     
     }
     // Adds a card object to a given deck list (new addition or updates an already-present quantity)
