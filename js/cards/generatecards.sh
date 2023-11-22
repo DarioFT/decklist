@@ -10,7 +10,7 @@ unzip AtomicCards.json.zip
 ./parsecards.py
 
 # Minify
-terser decklist-cards.js -o decklist-cards-min.js
+terser decklist-cards.js --source-map "url='decklist-cards-min.js.map'" -o decklist-cards-min.js
 
 # Clean up a bit
 rm AtomicCards*
