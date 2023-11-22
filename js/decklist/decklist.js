@@ -134,6 +134,9 @@ var Decklist = {
       function getCard(name) {
         // Convert the name to lowercase
         name = name.toLowerCase();
+
+        // Replace alternative separators for dual cards
+        name = name.replace(/\s*\/\s*/g, " // ");
     
         // First, try to find the card with the original name
         if (cards.hasOwnProperty(name)) {
