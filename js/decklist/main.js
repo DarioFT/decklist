@@ -1463,3 +1463,8 @@ function statusAndTooltips(valid) {
   $('.status').removeClass('default empty valid warning error').addClass(newStatus);
   $('.status .details').html(statusBoxHtml);
 }
+
+document.addEventListener('DOMContentLoaded', (event) => {
+  const currentYear = new Date().getFullYear();
+  document.getElementById('current-year').textContent = currentYear;
+});
