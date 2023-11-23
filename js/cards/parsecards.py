@@ -29,9 +29,11 @@ def remove_accents(input_str):
 
 def getColorCode(colors):
     color_map = {'W': 'A', 'U': 'B', 'B': 'C', 'R': 'D', 'G': 'E'}
+    if len(colors) == 0:
+        return 'X'  # X for unknown or no color
     if len(colors) > 1:
         return 'F'  # Gold for multiple colors
-    return color_map.get(colors[0], 'X')  # X for unknown or no color
+    return color_map.get(colors[0], 'X')
 
 # Open the JSON file
 jsonfh = open("AtomicCards.json", "r")
