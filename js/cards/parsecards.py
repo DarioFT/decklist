@@ -75,7 +75,7 @@ for card in cards["data"].values():
         ocards[ocard]['c'] = 'Z'
     elif 'Artifact' in face['types'] and 'colors' not in face:
         ocards[ocard]['c'] = 'G'
-    elif face.get("layout") == "split":
+    elif (face.get("layout") == "split" or is_flip):
         ocards[ocard]['c'] = getColorCode(face.get("colorIdentity", []))
     else:
         ocards[ocard]['c'] = getColorCode(face.get("colors", []))
