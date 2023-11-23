@@ -27,6 +27,12 @@ def remove_accents(input_str):
     nfkd_form = unicodedata.normalize('NFKD', input_str)
     return "".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
+def getColorCode(colors):
+    color_map = {'W': 'A', 'U': 'B', 'B': 'C', 'R': 'D', 'G': 'E'}
+    if len(colors) > 1:
+        return 'F'  # Gold for multiple colors
+    return color_map.get(colors[0], 'X')  # X for unknown or no color
+
 # Open the JSON file
 jsonfh = open("AtomicCards.json", "r")
 
@@ -63,20 +69,14 @@ for card in cards["data"].values():
     # Create an entry in the output dictionary
     ocards[ocard] = {}
 
-    # Lands and (noncolored) artifacts are special
     if 'Land' in face['types']:
-        ocards[ocard]['c'] = 'Z' # Sort lands last
-    elif (('Artifact' in face['types']) and ('colors' not in face)):
+        ocards[ocard]['c'] = 'Z'
+    elif 'Artifact' in face['types'] and 'colors' not in face:
         ocards[ocard]['c'] = 'G'
-
-    # Make the colors shorter
-    if ('colors' not in face): pass
-    elif len(face['colors']) > 1:  ocards[ocard]['c'] = 'F'    # gold
-    elif face['colors'] == ['W']:  ocards[ocard]['c'] = 'A'
-    elif face['colors'] == ['U']:  ocards[ocard]['c'] = 'B'
-    elif face['colors'] == ['B']:  ocards[ocard]['c'] = 'C'
-    elif face['colors'] == ['R']:  ocards[ocard]['c'] = 'D'
-    elif face['colors'] == ['G']:  ocards[ocard]['c'] = 'E'
+    elif face.get("layout") == "split":
+        ocards[ocard]['c'] = getColorCode(face.get("colorIdentity", []))
+    else:
+        ocards[ocard]['c'] = getColorCode(face.get("colors", []))
 
     if   'Land'     in face['types']:  ocards[ocard]['t'] = '1'
     elif 'Creature' in face['types']:  ocards[ocard]['t'] = '2'
@@ -94,19 +94,6 @@ for card in cards["data"].values():
 
     # And put the true name in there as well
     ocards[ocard]['n'] = face["faceName" if is_flip else "name"]
-
-    # if 'names' in face:
-    #     name = " // ".join(face['names'])
-    #     ocard = name.lower().replace(u'\xc6', u'\xe6')   # Just like a real card
-    #
-    #     ocards[ocard] = {}
-    #     ocards[ocard]['c'] = 'S'
-    #     ocards[ocard]['m'] = 98
-    #     ocards[ocard]['n'] = name
-    #
-    #     legality = getLegalities(face)
-    #     if legality != "": ocards[ocard]['b'] = legality
-
 
 # Print out the full list of cards
 ojsonfh = open("decklist-cards.js", "w")
