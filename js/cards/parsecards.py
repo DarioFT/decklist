@@ -95,11 +95,6 @@ for card in cards["data"].values():
     # And put the true name in there as well
     ocards[ocard]['n'] = face["faceName" if is_flip else "name"]
 
-    # Now to handle split cards (ugh)
-    if ' // ' in ocard:
-        ocards[ocard]['c'] = 'S'
-        ocards[ocard]['m'] = 98
-
     # if 'names' in face:
     #     name = " // ".join(face['names'])
     #     ocard = name.lower().replace(u'\xc6', u'\xe6')   # Just like a real card
