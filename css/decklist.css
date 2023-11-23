@@ -1,287 +1,354 @@
-/* page layout */
-.wrapper{
-	width: 95%;
-	margin: 0 auto;
+.wrapper {
+  width: 95%;
+  margin: 0 auto;
 }
-.header{
-	float: left;
-	width: 100%;
+.header {
+  float: left;
+  width: 100%;
 }
-.wrapleft{
-	float: left;
-	width: 100%;
+.wrapleft {
+  float: left;
+  width: 100%;
 }
-.left, #sortorderwrapper {
-	margin-right: 450px;
+.left,
+#sortorderwrapper {
+  margin-right: 450px;
 }
 
-.right{
-	color: #000;
-	float: right;
-	text-align: center;
-	width: 440px;
-	margin-left: -440px;
+.right {
+  color: #000;
+  float: right;
+  text-align: center;
+  width: 440px;
+  margin-left: -440px;
 }
-.footer{
-	clear: both;
-	color: #000;
-	float: left;
-	font-size: 11px;
-	margin-top: 15px;
-	margin-bottom: 15px;
-	text-align: center;
-	width: 100%;
+.footer {
+  clear: both;
+  color: #000;
+  float: left;
+  font-size: 11px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  text-align: center;
+  width: 100%;
 }
 a {
-	text-decoration: none;
+  text-decoration: none;
 }
 
-body{
-	padding: 0px;
-	margin: 0px;
-	font-family: 'Roboto', sans-serif;
+body {
+  padding: 0px;
+  margin: 0px;
+  font-family: "Roboto", sans-serif;
 }
 
-/* prettification */
-iframe{
-	border:none;
+iframe {
+  border: none;
 }
 
 h2 {
-	font-size: 20px;
-	padding: 0px 0px 10px 10px;
-	display: block;
-	border-bottom: 1px solid #e4e4e4;
-	color: #000;
-	margin-right: 10%;
+  font-size: 20px;
+  padding: 0px 0px 10px 10px;
+  display: block;
+  border-bottom: 1px solid #e4e4e4;
+  color: #000;
+  margin-right: 10%;
 }
 .right h2 {
-	text-align: left;
+  text-align: left;
 }
 
-.left input, .left textarea {
-	border: solid 1px #dadada;
-	color: #000;
-	height: 30px;
-	margin: 2px 6px 16px 0px;
-	outline: 0 none;
-	width: 70%;
-	font-size: 12px;
-	line-height: 15px;
-	padding-left: 5px;
+.left input,
+.left textarea {
+  border: solid 1px #dadada;
+  color: #000;
+  height: 30px;
+  margin: 2px 6px 16px 0px;
+  outline: 0 none;
+  width: 70%;
+  font-size: 12px;
+  line-height: 15px;
+  padding-left: 5px;
 }
 
-.left input.warning:hover, .left textarea.warning:hover,
-.left input.warning:focus, .left textarea.warning:focus {
-	border-color: #ffdc00;
+.left input.warning:hover,
+.left textarea.warning:hover,
+.left input.warning:focus,
+.left textarea.warning:focus {
+  border-color: #ffdc00;
 }
 
-.left input.error:hover, .left textarea.error:hover,
-.left input.error:focus, .left textarea.error:focus {
-	border-color: red;
+.left input.error:hover,
+.left textarea.error:hover,
+.left input.error:focus,
+.left textarea.error:focus {
+  border-color: red;
 }
 
 .left input[disabled] {
-	opacity: 0.6;
+  opacity: 0.6;
 }
 
 .left textarea {
-	height: 120px;
-	padding-top: 5px;
-	resize: vertical;
+  height: 120px;
+  padding-top: 5px;
+  resize: vertical;
 }
 
 .left #protip {
-	color: #000;
-	font-size: 11px;
-	display: block;
-	margin-left: 14em;
-	margin-top: -15px;
-	margin-bottom: 10px;
+  color: #000;
+  font-size: 11px;
+  display: block;
+  margin-left: 14em;
+  margin-top: -15px;
+  margin-bottom: 10px;
 }
 
 .tooltip {
-	border: 2px solid #aaa;
-	box-shadow: 0 0 5px #aaa;
-	padding: 8px;
-	position: absolute;
-	z-index: 9999;
+  border: 2px solid #aaa;
+  box-shadow: 0 0 5px #aaa;
+  padding: 8px;
+  position: absolute;
+  z-index: 9999;
 }
 
 .tooltip ul {
-	margin-top: 0;
-	margin-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .left label {
-	display: block;
-	margin: 0;
+  display: block;
+  margin: 0;
 }
 
-.left label>span:first-child {
-	color: #000;
-	float: left;
-	margin-top: 12px;
-	padding-right: 10px;
-	text-align: right;
-	width: 15%;
+.left label > span:first-child {
+  color: #000;
+  float: left;
+  margin-top: 12px;
+  padding-right: 10px;
+  text-align: right;
+  width: 15%;
 }
 
 .left span {
-	display: block;
-	font-size: 13px;
+  display: block;
+  font-size: 13px;
 }
 
 #sortorderfloat {
-	display: block;
-	text-align: center;
+  display: block;
+  text-align: center;
 }
 
-#download, #upload, #permalink  {
-	margin-top: 10px;
+#download,
+#upload,
+#permalink {
+  margin-top: 10px;
 }
 
-#upload, #formupload {
-	display: none;
+#upload,
+#formupload {
+  display: none;
 }
 
 .status {
-	border-width: 5px;
-	border-style: solid;
-	margin: 10px 0;
-	padding: 10px 25px;
-	position: relative;
+  border-width: 5px;
+  border-style: solid;
+  margin: 10px 0;
+  padding: 10px 25px;
+  position: relative;
 }
 
-.status.default, .status.empty {
-	border-color: grey;
-	border-color: rgba(128, 128, 128, 0.3);
+.status.default,
+.status.empty {
+  border-color: grey;
+  border-color: rgba(128, 128, 128, 0.3);
 }
 
 .status.valid {
-	border-color: green;
-	border-color: rgba(0, 125, 0, 0.3);
+  border-color: green;
+  border-color: rgba(0, 125, 0, 0.3);
 }
 
 .status.warning {
-	border-color: #ffdc00;
-	border-color: rgba(255, 220, 0, 0.3);
+  border-color: #ffdc00;
+  border-color: rgba(255, 220, 0, 0.3);
 }
 
 .status.error {
-	border-color: red;
-	border-color: rgba(255, 0, 0, 0.3);
+  border-color: red;
+  border-color: rgba(255, 0, 0, 0.3);
 }
 
 .statusmark {
-    font-family: 'Roboto', sans-serif;
-	font-size: 60px;
-	font-weight: bold;
-	height: 80px;
-	margin: 10px;
-	text-shadow: grey 0 0 3px;
+  font-family: "Roboto", sans-serif;
+  font-size: 60px;
+  font-weight: bold;
+  height: 80px;
+  margin: 10px;
+  text-shadow: grey 0 0 3px;
 }
 
 .statusmark:before {
-	content: "";
-	display: block;
-	height: 80px;
-	margin: auto auto;
-	width: 80px;
+  content: "";
+  display: block;
+  height: 80px;
+  margin: auto auto;
+  width: 80px;
 }
 
 .valid .statusmark:before {
-	background: url('../images/ok.png') center center / 80px no-repeat scroll;
+  background: url("../images/ok.png") center center / 80px no-repeat scroll;
 }
 
-.default .statusmark:before, .empty .statusmark:before, .warning .statusmark:before {
-	background: url('../images/warning.png') center center / 80px no-repeat scroll;
+.default .statusmark:before,
+.empty .statusmark:before,
+.warning .statusmark:before {
+  background: url("../images/warning.png") center center / 80px no-repeat scroll;
 }
 
 .error .statusmark:before {
-	background: url('../images/error.png') center center / 80px no-repeat scroll;
+  background: url("../images/error.png") center center / 80px no-repeat scroll;
 }
 
 .status .details {
-	color: black;
-	list-style-type: disc;
-	margin-top: 0;
-	margin-bottom: 0;
-	padding-left: 20px;
-	text-align: left;
+  color: black;
+  list-style-type: disc;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-left: 20px;
+  text-align: left;
 }
 
 .details > li {
-	line-height: 23px;
-	list-style-type: none;
-	margin-left: 25px;
-	position: relative;
-	transition: color 0.15s;
+  line-height: 23px;
+  list-style-type: none;
+  margin-left: 25px;
+  position: relative;
+  transition: color 0.15s;
 }
 
 .details label {
-	cursor: pointer;
+  cursor: pointer;
 }
 
-.details .warning label:before, .details .error label:before {
-	content: "";
-	display: block;
-	height: 20px;
-	overflow: visible;
-	position: absolute;
-		top: 0;
-		left: -25px;
-	width: 20px;
+.details .warning label:before,
+.details .error label:before {
+  content: "";
+  display: block;
+  height: 20px;
+  overflow: visible;
+  position: absolute;
+  top: 0;
+  left: -25px;
+  width: 20px;
 }
 
 .details .warning label:before {
-	background: url('../images/warning.png') center center / 20px no-repeat scroll;
-
+  background: url("../images/warning.png") center center / 20px no-repeat scroll;
 }
 
 .details .error label:before {
-	background: url('../images/error.png') center center / 20px no-repeat scroll;
+  background: url("../images/error.png") center center / 20px no-repeat scroll;
 }
 
 .details .warning:hover {
-	color: darkgoldenrod;
+  color: darkgoldenrod;
 }
 
 .details .error:hover {
-	color: firebrick;
+  color: firebrick;
 }
 
 .details ul {
-	padding-left: 30px;
+  padding-left: 30px;
 }
 
 #deckliststatuses {
-	text-align: left;
-	display: none;
+  text-align: left;
+  display: none;
 }
 
 .deckliststatus {
-	vertical-align: bottom;
-	display: none;
+  vertical-align: bottom;
+  display: none;
 }
 
 .deckliststatus img {
-	height: 20px;
-	margin-right: .3em;
-	vertical-align: text-bottom;
-	width: 20px;
+  height: 20px;
+  margin-right: 0.3em;
+  vertical-align: text-bottom;
+  width: 20px;
 }
 
 input[type="radio"]:checked + label {
-    background: #0055cc;
-    font-weight: bold;
+  background: #0055cc;
+  font-weight: bold;
 }
 
 input[type="radio"]:checked + label:hover {
-    background-color: #0066dd;
-	font-weight: bold;
+  background-color: #0066dd;
+  font-weight: bold;
 }
 
 a {
-    text-decoration: underline;
+  text-decoration: underline;
+}
+
+@media (max-width: 464px) {
+  .wrapleft,
+  .left,
+  .right {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .wrapleft {
+    display: block;
+  }
+
+  .left,
+  .right {
+    width: 100%;
+  }
+  .left label > span:first-child {
+    float: none;
+    display: block;
+    width: 100%;
+    text-align: left;
+    margin-top: 10px;
+  }
+
+  .left input,
+  .left textarea {
+    width: 95%;
+    margin-left: 5px;
+  }
+
+  #decklist {
+    width: 95%;
+    height: 120vw;
+  }
+
+  #sortorderwrapper {
+    text-align: center;
+  }
+
+  #sortorderfloat {
+    display: inline-block;
+  }
+
+  .left,
+  #sortorderwrapper {
+    margin-right: 5%;
+  }
+
+  .footer {
+    margin-left: 5%;
+    width: 90%;
+  }
 }
