@@ -1,6 +1,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2014 April King
+Copyright (c) 2023 Dario Fernandez Torre
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +20,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+Additional Attribution:
+This project, decklist.xyz, is a modified and enhanced version of the original project by April King, available at https://github.com/april/decklist. The modifications and enhancements, focused on user interface and performance, were introduced by Dario Fernandez Torre starting in 2023. For more information about this fork, visit https://github.com/DarioFT/decklist.

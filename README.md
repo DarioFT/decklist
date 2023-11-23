@@ -1,7 +1,10 @@
 decklist
 ========
 
-The code behind [decklist.xyz](https://www.decklist.xyz), which generates DCI Registration Sheets.
+The code behind [decklist.xyz](https://www.decklist.xyz), which generates Magic: The Gathering tournament Registration Sheets. 
+
+It is an enhanced version of the original [decklist](https://www.decklist.org) project created by April King. This fork includes additional features and improvements aimed at providing a more comprehensive and user-friendly experience for generating MTG deck lists.
+
 
 ## Direct Linking
 

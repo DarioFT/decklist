@@ -18,4 +18,4 @@ jobs:
         working-directory: ./js/cards/
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: Update card list
+          commit_message: 💬 Update card list
