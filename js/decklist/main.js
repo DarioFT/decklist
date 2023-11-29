@@ -1064,7 +1064,7 @@ function generateStandardDecklist(parsedInput) {
   return dl;
 }
 
-function generatePermalink(includeBlank = false) {
+async function generatePermalink(includeBlank = false) {
   let rv = 'https://decklist.xyz/';
 
   const logo = ($._GET && $._GET['logo']) ? $._GET['logo'] : 'mtg';
@@ -1096,7 +1096,38 @@ function generatePermalink(includeBlank = false) {
     rv += 'logo=' + encodeURIComponent(logo);
   }
 
-  return rv;
+  // Shorten URL using is.gd
+  try {
+    const response = await fetch(`https://is.gd/create.php?format=json&url=${encodeURIComponent(rv)}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.shorturl;
+  } catch (error) {
+    console.error('Error while shortening URL:', error);
+    return rv; // Return the original URL in case of error
+  }
+}
+
+async function copyPermalinkToClipboard() {
+  const button = document.getElementById('permalink');
+  button.value = 'Loading...';
+  button.disabled = true; // Disable the button
+
+  try {
+      const permalink = await generatePermalink();
+      await navigator.clipboard.writeText(permalink);
+      button.value = 'Copied!';
+  } catch (error) {
+      console.error('Error:', error);
+      button.value = 'Failed to Copy';
+  } finally {
+      setTimeout(() => {
+          button.value = 'Copy Permalink to Clipboard';
+          button.disabled = false; // Re-enable the button
+      }, 3000); // Reset button text and state after 3 seconds
+  }
 }
 
 // Performs validation on user input and updates PDF

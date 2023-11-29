@@ -296,6 +296,12 @@ a {
   text-decoration: underline;
 }
 
+#permalink:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
 @media (max-width: 464px) {
   .wrapleft,
   .left,
