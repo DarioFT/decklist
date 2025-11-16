@@ -94,8 +94,14 @@
 </head>
 
 <body>
+  <!-- Dark mode toggle -->
+  <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode">
+    <span id="darkModeIcon">🌙</span>
+  </button>
+
   <div class="wrapper">
-    <div class="wrapleft">
+    <div class="content-row">
+      <div class="wrapleft">
       <div class="left">
         <form>
           <h2>Personal Information</h2>
@@ -179,6 +185,13 @@
         <input type="button" id="upload" value="Upload Decklist" onclick="uploadDecklistPDF();">
         <input type="button" id="permalink" value="Copy Permalink to Clipboard" onclick="copyPermalinkToClipboard()">
       </form>
+
+      <!-- Deck management actions -->
+      <div class="deck-actions">
+        <button id="saveDeck">💾 Save Decklist</button>
+        <button id="loadDeck">📂 Load Decklist</button>
+        <button id="clearDeck">🗑️ Clear All</button>
+      </div>
       <form id="formupload" enctype="multipart/form-data" method="post">
         <input type="hidden" id="decklistPDF" name="decklistPDF">
       </form>
@@ -187,6 +200,7 @@
         <div class="statusmark"></div>
         <ul class="details"></div>
       </div>
+    </div>
     </div>
 
     <div class="footer">

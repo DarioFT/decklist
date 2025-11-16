@@ -8,6 +8,15 @@ var pdfChangeTimer = null;
 
 // When the page loads, generate a blank deck list preview
 $(document).ready(function() {
+  // Initialize dark mode from localStorage
+  initDarkMode();
+
+  // Initialize save/load functionality
+  initDeckManagement();
+
+  // Initialize autocomplete for deck textareas
+  initAutocomplete();
+
   // bind events to all the input fields on the left side, to generate a PDF on change
   $('div.left input, div.left textarea').on('input', pdfChangeWait);
   $('#eventdate, input[type="radio"]').change(pdfChangeWait);
@@ -1571,3 +1580,297 @@ document.addEventListener('DOMContentLoaded', (event) => {
   const currentYear = new Date().getFullYear();
   document.getElementById('current-year').textContent = currentYear;
 });
+
+// ==================== DARK MODE FUNCTIONALITY ====================
+
+function initDarkMode() {
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  const darkModeIcon = document.getElementById('darkModeIcon');
+
+  // Check localStorage for dark mode preference
+  const isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+  if (isDarkMode) {
+    document.body.classList.add('dark-mode');
+    darkModeIcon.textContent = '☀️';
+  }
+
+  // Toggle dark mode on button click
+  darkModeToggle.addEventListener('click', function() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+
+    // Update icon
+    darkModeIcon.textContent = isDark ? '☀️' : '🌙';
+
+    // Save preference
+    localStorage.setItem('darkMode', isDark);
+
+    // Track dark mode toggle
+    if (typeof posthog !== 'undefined') {
+      posthog.capture('dark_mode_toggled', { enabled: isDark });
+    }
+  });
+}
+
+// ==================== DECK MANAGEMENT (SAVE/LOAD) ====================
+
+function initDeckManagement() {
+  const saveButton = document.getElementById('saveDeck');
+  const loadButton = document.getElementById('loadDeck');
+  const clearButton = document.getElementById('clearDeck');
+
+  // Save deck to localStorage
+  saveButton.addEventListener('click', function() {
+    const deckData = {
+      firstname: $('#firstname').val(),
+      lastname: $('#lastname').val(),
+      event: $('#event').val(),
+      eventdate: $('#eventdate').val(),
+      eventlocation: $('#eventlocation').val(),
+      deckname: $('#deckname').val(),
+      deckdesigner: $('#deckdesigner').val(),
+      deckmain: $('#deckmain').val(),
+      deckside: $('#deckside').val(),
+      sortorder: $('input[name="sortorder"]:checked').prop('id'),
+      decksheet: $('input[name="decksheetformat"]:checked').prop('id'),
+      separateBasicLands: $('#separate-basic-lands').is(':checked'),
+      savedAt: new Date().toISOString()
+    };
+
+    localStorage.setItem('savedDeck', JSON.stringify(deckData));
+
+    // Visual feedback
+    saveButton.textContent = '✅ Saved!';
+    setTimeout(() => {
+      saveButton.textContent = '💾 Save Decklist';
+    }, 2000);
+
+    // Track save event
+    if (typeof posthog !== 'undefined') {
+      posthog.capture('deck_saved', {
+        has_main_deck: deckData.deckmain.length > 0,
+        has_sideboard: deckData.deckside.length > 0
+      });
+    }
+  });
+
+  // Load deck from localStorage
+  loadButton.addEventListener('click', function() {
+    const savedDeck = localStorage.getItem('savedDeck');
+
+    if (!savedDeck) {
+      alert('No saved decklist found. Save a decklist first!');
+      return;
+    }
+
+    const deckData = JSON.parse(savedDeck);
+
+    // Load all fields
+    $('#firstname').val(deckData.firstname || '');
+    $('#lastname').val(deckData.lastname || '');
+    $('#event').val(deckData.event || '');
+    $('#eventdate').val(deckData.eventdate || '');
+    $('#eventlocation').val(deckData.eventlocation || '');
+    $('#deckname').val(deckData.deckname || '');
+    $('#deckdesigner').val(deckData.deckdesigner || '');
+    $('#deckmain').val(deckData.deckmain || '');
+    $('#deckside').val(deckData.deckside || '');
+    $('#separate-basic-lands').prop('checked', deckData.separateBasicLands || false);
+
+    // Restore sort order
+    if (deckData.sortorder) {
+      $('#' + deckData.sortorder).click();
+    }
+
+    // Restore deck sheet format
+    if (deckData.decksheet) {
+      $('#' + deckData.decksheet).click();
+    }
+
+    // Trigger PDF regeneration
+    pdfChangeWait();
+
+    // Visual feedback
+    loadButton.textContent = '✅ Loaded!';
+    setTimeout(() => {
+      loadButton.textContent = '📂 Load Decklist';
+    }, 2000);
+
+    // Track load event
+    if (typeof posthog !== 'undefined') {
+      posthog.capture('deck_loaded');
+    }
+  });
+
+  // Clear all fields
+  clearButton.addEventListener('click', function() {
+    if (!confirm('Are you sure you want to clear all fields?')) {
+      return;
+    }
+
+    // Clear all input fields
+    $('#firstname, #lastname, #event, #eventdate, #eventlocation, #deckname, #deckdesigner, #deckmain, #deckside').val('');
+    $('#separate-basic-lands').prop('checked', false);
+
+    // Reset to default sort order
+    $('#sort-type').click();
+
+    // Trigger PDF regeneration
+    pdfChangeWait();
+
+    // Track clear event
+    if (typeof posthog !== 'undefined') {
+      posthog.capture('deck_cleared');
+    }
+  });
+}
+
+// ==================== AUTOCOMPLETE FUNCTIONALITY ====================
+
+function initAutocomplete() {
+  let autocompleteContainer = null;
+  let selectedIndex = -1;
+  let suggestions = [];
+
+  // Create autocomplete container
+  autocompleteContainer = $('<div class="autocomplete-suggestions"></div>');
+  $('body').append(autocompleteContainer);
+  autocompleteContainer.hide();
+
+  // Attach autocomplete to deck textareas
+  $('#deckmain, #deckside').on('input', function(e) {
+    const textarea = $(this);
+    const cursorPos = textarea[0].selectionStart;
+    const text = textarea.val();
+    const textBeforeCursor = text.substring(0, cursorPos);
+
+    // Get the current line being typed
+    const lines = textBeforeCursor.split('\n');
+    const currentLine = lines[lines.length - 1];
+
+    // Extract card name (after quantity like "4 " or "2x ")
+    const match = currentLine.match(/^\s*\d+x?\s+(.+)$/i);
+
+    if (match && match[1].length >= 2) {
+      const searchTerm = match[1].toLowerCase();
+      showAutocomplete(textarea, searchTerm);
+    } else {
+      hideAutocomplete();
+    }
+  });
+
+  // Handle keyboard navigation
+  $('#deckmain, #deckside').on('keydown', function(e) {
+    if (!autocompleteContainer.is(':visible')) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      selectedIndex = Math.min(selectedIndex + 1, suggestions.length - 1);
+      updateSelection();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      selectedIndex = Math.max(selectedIndex - 1, 0);
+      updateSelection();
+    } else if (e.key === 'Enter' && selectedIndex >= 0) {
+      e.preventDefault();
+      selectSuggestion($(this), suggestions[selectedIndex]);
+    } else if (e.key === 'Escape') {
+      hideAutocomplete();
+    }
+  });
+
+  // Hide autocomplete when clicking outside
+  $(document).on('click', function(e) {
+    if (!$(e.target).closest('#deckmain, #deckside, .autocomplete-suggestions').length) {
+      hideAutocomplete();
+    }
+  });
+
+  function showAutocomplete(textarea, searchTerm) {
+    // Search for matching cards in the global cards object
+    suggestions = [];
+
+    if (typeof cards !== 'undefined') {
+      for (const cardKey in cards) {
+        const card = cards[cardKey];
+        if (card.n.toLowerCase().includes(searchTerm)) {
+          suggestions.push(card.n);
+          if (suggestions.length >= 10) break; // Limit to 10 suggestions
+        }
+      }
+    }
+
+    if (suggestions.length === 0) {
+      hideAutocomplete();
+      return;
+    }
+
+    // Position autocomplete below textarea
+    const offset = textarea.offset();
+    const textareaHeight = textarea.outerHeight();
+
+    autocompleteContainer.css({
+      top: offset.top + textareaHeight + 'px',
+      left: offset.left + 'px',
+      width: textarea.outerWidth() + 'px'
+    });
+
+    // Populate suggestions
+    autocompleteContainer.empty();
+    suggestions.forEach((suggestion, index) => {
+      const item = $('<div class="autocomplete-suggestion"></div>')
+        .text(suggestion)
+        .on('click', function() {
+          selectSuggestion(textarea, suggestion);
+        });
+
+      autocompleteContainer.append(item);
+    });
+
+    selectedIndex = -1;
+    autocompleteContainer.show();
+  }
+
+  function hideAutocomplete() {
+    autocompleteContainer.hide();
+    selectedIndex = -1;
+    suggestions = [];
+  }
+
+  function updateSelection() {
+    autocompleteContainer.find('.autocomplete-suggestion').removeClass('selected');
+    if (selectedIndex >= 0) {
+      autocompleteContainer.find('.autocomplete-suggestion').eq(selectedIndex).addClass('selected');
+    }
+  }
+
+  function selectSuggestion(textarea, cardName) {
+    const cursorPos = textarea[0].selectionStart;
+    const text = textarea.val();
+    const textBeforeCursor = text.substring(0, cursorPos);
+    const textAfterCursor = text.substring(cursorPos);
+
+    // Get the current line
+    const lines = textBeforeCursor.split('\n');
+    const currentLineStart = textBeforeCursor.lastIndexOf('\n') + 1;
+    const currentLine = lines[lines.length - 1];
+
+    // Extract quantity
+    const match = currentLine.match(/^\s*(\d+x?\s+)/i);
+    const quantity = match ? match[1] : '';
+
+    // Replace current line with selected card
+    const newText = text.substring(0, currentLineStart) + quantity + cardName + textAfterCursor;
+    textarea.val(newText);
+
+    // Set cursor position after card name
+    const newCursorPos = currentLineStart + quantity.length + cardName.length;
+    textarea[0].setSelectionRange(newCursorPos, newCursorPos);
+
+    hideAutocomplete();
+
+    // Trigger change event
+    textarea.trigger('input');
+  }
+}

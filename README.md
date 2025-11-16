@@ -1,9 +1,44 @@
 decklist
 ========
 
-The code behind [decklist.xyz](https://www.decklist.xyz), which generates Magic: The Gathering tournament Registration Sheets, an enhanced version of the original [decklist](https://www.decklist.org) project created by April King. 
+The code behind [decklist.xyz](https://www.decklist.xyz), which generates Magic: The Gathering tournament Registration Sheets, an enhanced version of the original [decklist](https://www.decklist.org) project created by April King.
 
 This fork includes additional features and improvements aimed at providing a more comprehensive and user-friendly experience for generating MTG deck lists.
+
+## Features
+
+### Modern User Interface
+- **Dark Mode**: Toggle between light and dark themes with persistent preference storage
+- **Responsive Design**: Fully optimized for mobile, tablet, and desktop viewing
+- **Modern Styling**: Clean, professional interface with smooth transitions and hover effects
+- **Accessible**: High contrast ratios and keyboard-friendly controls
+
+### Deck Management
+- **Save/Load Functionality**: Save your decklist locally and load it anytime
+- **Clear All**: Quick reset button to start fresh
+- **Card Autocomplete**: Smart card name suggestions as you type (supports 2+ character searches)
+- **Multiple Format Support**: Import from MTGO, MTG Goldfish, Tappedout, MWS, MTG Salvation, and Deckbox
+
+### Deck Organization
+- **Multiple Sort Options**:
+  - Alphabetical
+  - CMC (Converted Mana Cost)
+  - Color
+  - Numeric
+  - Type (recommended)
+  - Original order
+- **Separate Basic Lands**: Option to group basic lands separately
+
+### Registration Sheets
+- **WotC Format**: Official Wizards of the Coast tournament registration sheets
+- **SCG Format**: Star City Games tournament registration sheets
+- **Custom Logos**: Support for multiple tournament organizer logos
+- **Direct Linking**: Pre-fill forms via URL parameters for tournament organizers
+
+### Card Database
+- **Daily Updates**: Automated card database updates from mtgjson.com
+- **Comprehensive Coverage**: Includes all Magic: The Gathering cards with metadata
+- **Smart Validation**: Real-time deck validation with helpful warnings and errors
 
 ## Direct Linking
 
