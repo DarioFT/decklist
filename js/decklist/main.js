@@ -28,6 +28,15 @@ $(document).ready(function() {
     }
   });
 
+  // Track separate basic lands toggle
+  $('#separate-basic-lands').on('change', function() {
+    if (typeof posthog !== 'undefined') {
+      posthog.capture('separate_basic_lands_toggled', {
+        enabled: $(this).is(':checked')
+      });
+    }
+  });
+
   // bind a date picker to the event date (thanks, jQuery UI)
   // also skin the upload and download button
   $('#eventdate').datepicker({ dateFormat: 'yy-mm-dd' }); // ISO-8601, woohoo
@@ -1193,12 +1202,25 @@ function generateDecklistPDF(outputtype = 'dataurlstring') {
     if (typeof posthog !== 'undefined') {
       const decksheetFormat = $('#decksheetformatselector input[name=decksheetformat]:checked').prop('id').replace('decksheet-', '');
       const sortOrder = $('input[name="sortorder"]:checked').prop('id').replace('sort-', '');
+      const maindeck_count = Decklist.count(parsedInput.main);
+      const sideboard_count = Decklist.count(parsedInput.side);
+
       posthog.capture('pdf_downloaded', {
         format: decksheetFormat,
         sort_order: sortOrder,
-        main_deck_count: parsedInput.main.length,
-        sideboard_count: parsedInput.side.length
+        main_deck_count: maindeck_count,
+        sideboard_count: sideboard_count,
+        total_cards: maindeck_count + sideboard_count
       });
+
+      // Track successful decklist creation (valid 60+ card deck)
+      if (maindeck_count >= 60 && maindeck_count <= 100 && sideboard_count <= 15) {
+        posthog.capture('successful_decklist_created', {
+          format: decksheetFormat,
+          main_deck_count: maindeck_count,
+          sideboard_count: sideboard_count
+        });
+      }
     }
     dl.save('decklist.pdf');
   }
@@ -1525,6 +1547,24 @@ function statusAndTooltips(valid) {
   // set new status, display new notifications
   $('.status').removeClass('default empty valid warning error').addClass(newStatus);
   $('.status .details').html(statusBoxHtml);
+
+  // Track validation errors
+  if (errorLevel & 0x100) {
+    if (typeof posthog !== 'undefined') {
+      const errorFields = [];
+      for (const key in notifications) {
+        if (typeof notifications[key] !== 'function') {
+          if (notifications[key]?.some(n => n[1] === 'error')) {
+            errorFields.push(key);
+          }
+        }
+      }
+      posthog.capture('validation_error', {
+        error_fields: errorFields,
+        error_count: errorFields.length
+      });
+    }
+  }
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
