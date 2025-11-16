@@ -12,6 +12,22 @@ $(document).ready(function() {
   $('div.left input, div.left textarea').on('input', pdfChangeWait);
   $('#eventdate, input[type="radio"]').change(pdfChangeWait);
 
+  // Track deck sheet format changes
+  $('input[name="decksheetformat"]').on('change', function() {
+    const format = $(this).prop('id').replace('decksheet-', '');
+    if (typeof posthog !== 'undefined') {
+      posthog.capture('decksheet_format_changed', { format: format });
+    }
+  });
+
+  // Track sort order changes
+  $('input[name="sortorder"]').on('change', function() {
+    const sortOrder = $(this).prop('id').replace('sort-', '');
+    if (typeof posthog !== 'undefined') {
+      posthog.capture('sort_order_changed', { sort_order: sortOrder });
+    }
+  });
+
   // bind a date picker to the event date (thanks, jQuery UI)
   // also skin the upload and download button
   $('#eventdate').datepicker({ dateFormat: 'yy-mm-dd' }); // ISO-8601, woohoo
@@ -1119,6 +1135,11 @@ async function copyPermalinkToClipboard() {
       const permalink = await generatePermalink();
       await navigator.clipboard.writeText(permalink);
       button.value = 'Copied!';
+
+      // Track permalink copy
+      if (typeof posthog !== 'undefined') {
+        posthog.capture('permalink_copied', { permalink_length: permalink.length });
+      }
   } catch (error) {
       console.error('Error:', error);
       button.value = 'Failed to Copy';
@@ -1168,6 +1189,17 @@ function generateDecklistPDF(outputtype = 'dataurlstring') {
     return(rawPDF);
   }
   else {
+    // Track PDF download
+    if (typeof posthog !== 'undefined') {
+      const decksheetFormat = $('#decksheetformatselector input[name=decksheetformat]:checked').prop('id').replace('decksheet-', '');
+      const sortOrder = $('input[name="sortorder"]:checked').prop('id').replace('sort-', '');
+      posthog.capture('pdf_downloaded', {
+        format: decksheetFormat,
+        sort_order: sortOrder,
+        main_deck_count: parsedInput.main.length,
+        sideboard_count: parsedInput.side.length
+      });
+    }
     dl.save('decklist.pdf');
   }
 }
