@@ -94,6 +94,17 @@
 </head>
 
 <body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-brand">
+        <span class="brand-icon">⚡</span>
+        <span class="brand-text">decklist<span class="brand-highlight">.xyz</span></span>
+      </div>
+      <div class="navbar-tagline">MTG Tournament Decklist Generator</div>
+    </div>
+  </nav>
+
   <!-- Dark mode toggle -->
   <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode">
     <span id="darkModeIcon">🌙</span>
@@ -181,9 +192,9 @@
         <div class="deckliststatus" id="dlw1"><img src="images/warning.png">Decklist contains &gt;60 cards.</div>
       </div>
       <form>
-        <input type="button" id="download" value="Download Decklist" onclick="generateDecklistPDF('dataurlnewwindow');">
+        <input type="button" id="download" value="📥 Download PDF" onclick="generateDecklistPDF('dataurlnewwindow');">
         <input type="button" id="upload" value="Upload Decklist" onclick="uploadDecklistPDF();">
-        <input type="button" id="permalink" value="Copy Permalink to Clipboard" onclick="copyPermalinkToClipboard()">
+        <input type="button" id="permalink" value="🔗 Copy Permalink" onclick="copyPermalinkToClipboard()">
       </form>
 
       <!-- Deck management actions -->

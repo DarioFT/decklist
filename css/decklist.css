@@ -103,6 +103,78 @@ body {
   overflow-x: hidden;
 }
 
+/* Navigation Bar */
+.navbar {
+  background: var(--bg-primary);
+  box-shadow: var(--shadow-md);
+  border-bottom: 2px solid var(--accent-color);
+}
+
+.navbar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.brand-icon {
+  font-size: 32px;
+  filter: drop-shadow(0 2px 4px rgba(0, 85, 204, 0.3));
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.brand-text {
+  color: var(--accent-color); /* Fallback */
+  background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+/* Fallback for browsers that don't support background-clip: text */
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .brand-text {
+    color: var(--accent-color);
+  }
+}
+
+.brand-highlight {
+  color: var(--accent-color);
+  font-weight: 800;
+  -webkit-text-fill-color: var(--accent-color);
+}
+
+.navbar-tagline {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
 iframe {
   border: none;
   border-radius: var(--radius-md);
@@ -338,7 +410,32 @@ h2 {
   margin-bottom: 20px;
 }
 
-#download,
+#download {
+  padding: 16px 32px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-hover) 100%);
+  border: none;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#download:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg), 0 0 20px rgba(0, 85, 204, 0.3);
+  background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent-color) 100%);
+}
+
+#download:active {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
 #upload,
 #permalink {
   padding: 12px 24px;
@@ -353,7 +450,6 @@ h2 {
   color: var(--text-primary);
 }
 
-#download:hover,
 #upload:hover,
 #permalink:not(:disabled):hover {
   transform: translateY(-2px);
@@ -615,6 +711,27 @@ a {
 }
 
 @media (max-width: 464px) {
+  .navbar-container {
+    flex-direction: column;
+    padding: 12px 15px;
+    gap: 8px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .navbar-brand {
+    font-size: 22px;
+    gap: 8px;
+  }
+
+  .brand-icon {
+    font-size: 26px;
+  }
+
+  .navbar-tagline {
+    font-size: 11px;
+  }
+
   .wrapper {
     width: 100%;
     padding: 5px;
@@ -742,6 +859,19 @@ a {
     font-size: 12px;
   }
 
+  #download {
+    padding: 14px 24px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  #upload,
+  #permalink {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
   .footer {
     font-size: 11px;
     padding: 15px 5px;
@@ -749,6 +879,24 @@ a {
 }
 
 @media (max-width: 768px) {
+  .navbar-container {
+    padding: 14px 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .navbar-brand {
+    font-size: 24px;
+  }
+
+  .brand-icon {
+    font-size: 28px;
+  }
+
+  .navbar-tagline {
+    font-size: 12px;
+  }
+
   .wrapper {
     padding: 10px;
   }
@@ -856,6 +1004,19 @@ a {
   .deck-actions button {
     width: 100%;
     padding: 12px;
+  }
+
+  #download {
+    padding: 15px 28px;
+    font-size: 15px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  #upload,
+  #permalink {
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .status {
