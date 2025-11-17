@@ -30,6 +30,8 @@ body.dark-mode {
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.5);
+  --accent-color: #3388ff;
+  --accent-hover: #4499ff;
 }
 
 .wrapper {
@@ -654,13 +656,20 @@ input[type="radio"]:checked + label {
   background: var(--accent-color);
   color: #ffffff;
   font-weight: bold;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 0 0 2px var(--accent-color), 0 0 12px rgba(0, 85, 204, 0.4), var(--shadow-md);
+  border-color: var(--accent-color);
+  transform: translateY(-2px);
+}
+
+body.dark-mode input[type="radio"]:checked + label {
+  box-shadow: 0 0 0 2px var(--accent-color), 0 0 16px rgba(51, 136, 255, 0.6), var(--shadow-md);
 }
 
 input[type="radio"]:checked + label:hover {
   background: var(--accent-hover);
   color: #ffffff;
   font-weight: bold;
+  transform: translateY(-2px);
 }
 
 a {
