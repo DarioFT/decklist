@@ -26,6 +26,9 @@ var logoCache = {};
 
 // When the page loads, generate a blank deck list preview
 $(document).ready(function() {
+  // Set random rarity icon
+  initRandomRarityIcon();
+
   // Initialize dark mode from localStorage
   initDarkMode();
 
@@ -1840,6 +1843,31 @@ function handleCustomLogoUpload(file) {
       $('#custom-logo-input').val('');
       $('#custom-logo-filename').text('');
     });
+}
+
+// Initialize random rarity icon for navbar brand
+function initRandomRarityIcon() {
+  const rarities = ['common', 'uncommon', 'rare', 'mythic'];
+  const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
+  const iconElement = document.getElementById('rarityIcon');
+
+  if (iconElement) {
+    iconElement.classList.add(randomRarity);
+
+    // Add click handler to cycle through rarities
+    iconElement.addEventListener('click', function() {
+      const currentRarity = rarities.find(r => iconElement.classList.contains(r));
+      const currentIndex = rarities.indexOf(currentRarity);
+      const nextIndex = (currentIndex + 1) % rarities.length;
+
+      // Remove current rarity class and add next one
+      iconElement.classList.remove(currentRarity);
+      iconElement.classList.add(rarities[nextIndex]);
+    });
+
+    // Make it look clickable
+    iconElement.style.cursor = 'pointer';
+  }
 }
 
 // Initialize custom logo upload functionality
