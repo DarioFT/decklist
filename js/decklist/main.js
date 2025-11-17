@@ -1940,6 +1940,22 @@ function initDeckManagement() {
   const loadButton = document.getElementById('loadDeck');
   const clearButton = document.getElementById('clearDeck');
 
+  // Helper function to update load button state
+  function updateLoadButtonState() {
+    const hasSavedDeck = localStorage.getItem('savedDeck') !== null;
+    loadButton.disabled = !hasSavedDeck;
+    if (!hasSavedDeck) {
+      loadButton.style.opacity = '0.5';
+      loadButton.style.cursor = 'not-allowed';
+    } else {
+      loadButton.style.opacity = '1';
+      loadButton.style.cursor = 'pointer';
+    }
+  }
+
+  // Initialize button state on page load
+  updateLoadButtonState();
+
   // Save deck to localStorage
   saveButton.addEventListener('click', function() {
     const deckData = {
@@ -1959,6 +1975,9 @@ function initDeckManagement() {
     };
 
     localStorage.setItem('savedDeck', JSON.stringify(deckData));
+
+    // Update load button state
+    updateLoadButtonState();
 
     // Visual feedback
     saveButton.textContent = '✅ Saved!';
