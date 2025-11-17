@@ -1,10 +1,29 @@
 /* eslint-env browser */
 /* global $, jQuery, jsPDF, Decklist, DCI */
-/* global logo, futcreaturelogo, futsorcerylogo, futlandlogo, futmultiplelogo, scglogo */
 
 // global timeout filters
 var decklistChangeTimer = null;
 var pdfChangeTimer = null;
+
+// Logos configuration - centralized logo metadata
+const LOGOS_CONFIG = {
+  wotc: [
+    { id: 'mtg', name: 'Magic: The Gathering', file: 'mtg.jpg', format: 'JPEG' },
+    { id: 'dci', name: 'DCI', file: 'dcilogo.jpg', format: 'JPEG' },
+    { id: 'legion', name: 'Legion', file: 'legion.jpg', format: 'JPEG' },
+    { id: 'elojodeugin', name: 'El Ojo de Ugin', file: 'elojodeugin.jpg', format: 'JPEG' }
+  ],
+  scg: [
+    { id: 'FUTcreature', file: 'FUTcreature.jpg', format: 'JPEG' },
+    { id: 'FUTland', file: 'FUTland.jpg', format: 'JPEG' },
+    { id: 'FUTmultiple', file: 'FUTmultiple.jpg', format: 'JPEG' },
+    { id: 'FUTsorcery', file: 'FUTsorcery.jpg', format: 'JPEG' },
+    { id: 'scglogo', file: 'starcitygames.png', format: 'PNG' }
+  ]
+};
+
+// Cache for loaded logo images
+var logoCache = {};
 
 // When the page loads, generate a blank deck list preview
 $(document).ready(function() {
@@ -17,6 +36,12 @@ $(document).ready(function() {
   // Initialize autocomplete for deck textareas
   initAutocomplete();
 
+  // Populate logo dropdown dynamically
+  populateLogoDropdown();
+
+  // Preload SCG logos
+  loadSCGLogos();
+
   // bind events to all the input fields on the left side, to generate a PDF on change
   $('div.left input, div.left textarea').on('input', pdfChangeWait);
   $('#eventdate, input[type="radio"]').change(pdfChangeWait);
@@ -26,6 +51,30 @@ $(document).ready(function() {
     const format = $(this).prop('id').replace('decksheet-', '');
     if (typeof posthog !== 'undefined') {
       posthog.capture('decksheet_format_changed', { format: format });
+    }
+    // Show/hide logo selector based on format
+    toggleLogoSelector();
+  });
+
+  // Handle logo selection changes
+  $('#logo-select').on('change', function() {
+    const selectedLogo = $(this).val();
+    $._GET['logo'] = selectedLogo;
+
+    // Load the selected logo and regenerate PDF
+    loadLogoImage(selectedLogo, function() {
+      generateDecklistPDF();
+    });
+
+    // Update history state
+    if (generatePermalink(true) !== history.state) {
+      console.log("pushing new state " + generatePermalink(true));
+      history.pushState(generatePermalink(true), document.title, generatePermalink());
+    }
+
+    // Track logo change
+    if (typeof posthog !== 'undefined') {
+      posthog.capture('logo_changed', { logo: selectedLogo });
     }
   });
 
@@ -159,35 +208,21 @@ function parseGET() {
     }
   });
 
-  // Load SCG logos
-  const scglogos = ['FUTcreature', 'FUTland', 'FUTmultiple', 'FUTsorcery', 'starcitygames.com-logo-lores'];
-  scglogos.forEach(function(logo) {
-    const element = document.createElement('script');
+  // Set default logo if not specified
+  if ($._GET['logo'] === undefined) {
+    $._GET['logo'] = 'mtg';
+  }
 
-    element.src = 'images/logos/' + logo + '.js';
-    element.type = 'text/javascript';
-    element.id = 'logo';
-
-    document.getElementsByTagName('head')[0].appendChild(element);
+  // Load the selected WotC logo
+  loadLogoImage($._GET['logo'], function() {
+    generateDecklistPDF();
   });
 
-  // load the wotc template logo
-  if ($._GET['logo'] === undefined) { $._GET['logo'] = 'mtg'; } // if logo isn't specified, use the MTG logo
+  // Set logo dropdown value from URL parameter
+  $('#logo-select').val($._GET['logo']);
 
-  const logos = ['mtg', 'dcilogo', 'legion', 'gpsanantonio', 'elojodeugin'];
-
-  logos.forEach(function(logo) {
-    if ($._GET['logo'] === logo) {
-      const element = document.createElement('script');
-
-      element.src = 'images/logos/' + logo + '.js';
-      element.type = 'text/javascript';
-      element.id = 'logo';
-      element.onload = function () { generateDecklistPDF(); };
-
-      document.getElementsByTagName('head')[0].appendChild(element);
-    }
-  });
+  // Initialize logo selector visibility
+  toggleLogoSelector();
 
   // switch to the proper decksheet; doing it this way in case we ever support other formats
   if ($._GET['decksheet'] !== undefined) {
@@ -471,10 +506,16 @@ function generateSCGDecklist(parsedInput) {
       }
     }
   });
-  // add section logos
-  scgdl.addImage(futcreaturelogo, 'JPEG', 59, 73.7, 30, 26.5);
-  scgdl.addImage(futsorcerylogo, 'JPEG', 317.7, 75, 20, 25.5);
-  scgdl.addImage(futlandlogo, 'JPEG', 565.5, 74.2, 32.3, 25.8);
+  // add section logos from cache
+  if (logoCache['FUTcreature']) {
+    scgdl.addImage(logoCache['FUTcreature'].data, logoCache['FUTcreature'].format, 59, 73.7, 30, 26.5);
+  }
+  if (logoCache['FUTsorcery']) {
+    scgdl.addImage(logoCache['FUTsorcery'].data, logoCache['FUTsorcery'].format, 317.7, 75, 20, 25.5);
+  }
+  if (logoCache['FUTland']) {
+    scgdl.addImage(logoCache['FUTland'].data, logoCache['FUTland'].format, 565.5, 74.2, 32.3, 25.8);
+  }
 
   // sideboard section
 
@@ -511,8 +552,10 @@ function generateSCGDecklist(parsedInput) {
   scgdl.setFontSize(sb_title_font_size);
   scgdl.setFontStyle('bold');
   scgdl.text('SIDEBOARD', pxToPt(67.68), textY(552.421, sb_title_font_size));
-  // sideboard logo
-  scgdl.addImage(futmultiplelogo, 'JPEG', 29.5, 414.8, 15, 15);
+  // sideboard logo from cache
+  if (logoCache['FUTmultiple']) {
+    scgdl.addImage(logoCache['FUTmultiple'].data, logoCache['FUTmultiple'].format, 29.5, 414.8, 15, 15);
+  }
   // sideboard cards
   scgdl.setFontSize(sb_font_size);
   scgdl.setFontStyle('normal');
@@ -650,8 +693,10 @@ function generateSCGDecklist(parsedInput) {
              pxToPt(775.758) + disclaimers_font_size + 0.5,
              null, null, 'center');
 
-  // SCG logo in bottom-right corner
-  scgdl.addImage(scglogo, 'PNG', 651, 473, 113.5, 88);
+  // SCG logo in bottom-right corner from cache
+  if (logoCache['scglogo']) {
+    scgdl.addImage(logoCache['scglogo'].data, logoCache['scglogo'].format, 651, 473, 113.5, 88);
+  }
 
   // Add second page
   scgdl.addPage('letter', 'portrait');
@@ -784,8 +829,11 @@ function generateStandardDecklist(parsedInput) {
     sideboard = Decklist.sort(parsedInput['side']),
     sideboard_count = Decklist.count(sideboard);
 
-  // Add the logo
-  dl.addImage(logo, 'JPEG', 27, 54, 90, 32);
+  // Add the logo from cache
+  const currentLogo = logoCache[$._GET['logo'] || 'mtg'];
+  if (currentLogo) {
+    dl.addImage(currentLogo.data, currentLogo.format, 27, 54, 90, 32);
+  }
 
   // Create all the rectangles
 
@@ -1580,6 +1628,106 @@ document.addEventListener('DOMContentLoaded', (event) => {
   const currentYear = new Date().getFullYear();
   document.getElementById('current-year').textContent = currentYear;
 });
+
+// ==================== LOGO SELECTOR FUNCTIONALITY ====================
+
+// Populate logo dropdown with options from LOGOS_CONFIG
+function populateLogoDropdown() {
+  const dropdown = $('#logo-select');
+  dropdown.empty();
+
+  // Sort logos alphabetically by name for display
+  const sortedLogos = [...LOGOS_CONFIG.wotc].sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
+
+  sortedLogos.forEach(function(logo) {
+    const option = $('<option></option>')
+      .attr('value', logo.id)
+      .text(logo.name);
+    dropdown.append(option);
+  });
+}
+
+// Load a logo image into cache
+function loadLogoImage(logoId, callback) {
+  // Check if already cached
+  if (logoCache[logoId]) {
+    callback(logoCache[logoId]);
+    return;
+  }
+
+  // Find logo config
+  const logoConfig = LOGOS_CONFIG.wotc.find(l => l.id === logoId);
+  if (!logoConfig) {
+    console.error('Logo not found:', logoId);
+    return;
+  }
+
+  // Load the image
+  const img = new Image();
+  img.onload = function() {
+    // Convert to base64
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    const dataURL = canvas.toDataURL('image/' + logoConfig.format.toLowerCase());
+
+    // Cache it
+    logoCache[logoId] = {
+      data: dataURL,
+      format: logoConfig.format
+    };
+
+    callback(logoCache[logoId]);
+  };
+  img.onerror = function() {
+    console.error('Failed to load logo:', logoConfig.file);
+  };
+  img.src = 'images/logos/' + logoConfig.file;
+}
+
+// Load SCG logos into cache
+function loadSCGLogos(callback) {
+  let loadedCount = 0;
+  const totalLogos = LOGOS_CONFIG.scg.length;
+
+  LOGOS_CONFIG.scg.forEach(function(logoConfig) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      const dataURL = canvas.toDataURL('image/' + logoConfig.format.toLowerCase());
+
+      logoCache[logoConfig.id] = {
+        data: dataURL,
+        format: logoConfig.format
+      };
+
+      loadedCount++;
+      if (loadedCount === totalLogos && callback) {
+        callback();
+      }
+    };
+    img.src = 'images/logos/' + logoConfig.file;
+  });
+}
+
+// Toggle logo selector visibility based on decksheet format
+function toggleLogoSelector() {
+  const decksheetFormat = $('#decksheetformatselector input[name=decksheetformat]:checked').prop('id').replace('decksheet-', '');
+
+  if (decksheetFormat === 'wotc') {
+    $('#logoselector').show();
+  } else {
+    $('#logoselector').hide();
+  }
+}
 
 // ==================== DARK MODE FUNCTIONALITY ====================
 

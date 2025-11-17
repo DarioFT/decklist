@@ -399,6 +399,46 @@ h2 {
   box-shadow: var(--shadow-sm);
 }
 
+#logoselector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+#logoselector label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+#logo-select {
+  padding: 8px 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  min-width: 180px;
+}
+
+#logo-select:hover {
+  border-color: var(--border-color-hover);
+  box-shadow: var(--shadow-sm);
+}
+
+#logo-select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(0, 85, 204, 0.1);
+}
+
 #decklistpreview {
   margin-bottom: 20px;
 }
@@ -821,6 +861,19 @@ a {
     padding: 8px 12px;
   }
 
+  #logoselector {
+    flex-direction: column;
+    padding: 10px;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  #logo-select {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
   .right {
     position: relative;
     top: 0;
@@ -985,6 +1038,16 @@ a {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+  }
+
+  #logoselector {
+    padding: 12px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  #logo-select {
+    min-width: 150px;
   }
 
   .footer {
