@@ -733,6 +733,45 @@ a {
   box-shadow: var(--shadow-sm);
 }
 
+/* Custom Logo Upload styles */
+#custom-logo-upload {
+  padding: 12px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.custom-logo-btn {
+  padding: 10px 16px;
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.custom-logo-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.custom-logo-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+#custom-logo-filename {
+  display: inline-block;
+  margin-left: 10px;
+  font-size: 0.9em;
+  color: var(--text-secondary);
+}
+
 /* Autocomplete styles */
 .autocomplete-suggestions {
   position: absolute;

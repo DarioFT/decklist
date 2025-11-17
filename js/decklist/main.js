@@ -10,7 +10,6 @@ const LOGOS_CONFIG = {
   wotc: [
     { id: 'mtg', name: 'Magic: The Gathering', file: 'mtg.jpg', format: 'JPEG' },
     { id: 'dci', name: 'DCI', file: 'dcilogo.jpg', format: 'JPEG' },
-    { id: 'legion', name: 'Legion', file: 'legion.jpg', format: 'JPEG' },
     { id: 'elojodeugin', name: 'El Ojo de Ugin', file: 'elojodeugin.jpg', format: 'JPEG' }
   ],
   scg: [
@@ -39,6 +38,9 @@ $(document).ready(function() {
   // Populate logo dropdown dynamically
   populateLogoDropdown();
 
+  // Initialize custom logo upload
+  initCustomLogoUpload();
+
   // Preload SCG logos
   loadSCGLogos();
 
@@ -61,10 +63,19 @@ $(document).ready(function() {
     const selectedLogo = $(this).val();
     $._GET['logo'] = selectedLogo;
 
-    // Load the selected logo and regenerate PDF
-    loadLogoImage(selectedLogo, function() {
-      generateDecklistPDF();
-    });
+    // For custom logos, don't regenerate PDF until image is uploaded
+    if (selectedLogo === 'custom') {
+      // Custom logo handling is done in initCustomLogoUpload
+      // Only regenerate if custom logo is already cached
+      if (logoCache['custom']) {
+        generateDecklistPDF();
+      }
+    } else {
+      // Load the selected logo and regenerate PDF
+      loadLogoImage(selectedLogo, function() {
+        generateDecklistPDF();
+      });
+    }
 
     // Update history state
     if (generatePermalink(true) !== history.state) {
@@ -1647,6 +1658,12 @@ function populateLogoDropdown() {
       .text(logo.name);
     dropdown.append(option);
   });
+
+  // Add Custom option at the end
+  const customOption = $('<option></option>')
+    .attr('value', 'custom')
+    .text('Custom (Upload Your Own)');
+  dropdown.append(customOption);
 }
 
 // Load a logo image into cache
@@ -1654,6 +1671,14 @@ function loadLogoImage(logoId, callback) {
   // Check if already cached
   if (logoCache[logoId]) {
     callback(logoCache[logoId]);
+    return;
+  }
+
+  // Handle custom logo case
+  if (logoId === 'custom') {
+    // Custom logo should be uploaded by user, so if it's not cached, just call callback without data
+    // The PDF generation will handle missing custom logo gracefully
+    callback(null);
     return;
   }
 
@@ -1727,6 +1752,125 @@ function toggleLogoSelector() {
   } else {
     $('#logoselector').hide();
   }
+}
+
+// ==================== CUSTOM LOGO UPLOAD FUNCTIONALITY ====================
+
+// Validate custom logo image (type and dimensions)
+function validateCustomLogo(file) {
+  return new Promise((resolve, reject) => {
+    // Check file type
+    const validTypes = ['image/jpeg', 'image/png'];
+    if (!validTypes.includes(file.type)) {
+      reject('Invalid file type. Please upload a JPEG or PNG image.');
+      return;
+    }
+
+    // Check file size (max 5MB to be safe)
+    if (file.size > 5 * 1024 * 1024) {
+      reject('File is too large. Please upload an image under 5MB.');
+      return;
+    }
+
+    // Check image dimensions
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+
+    img.onload = function() {
+      URL.revokeObjectURL(objectUrl);
+
+      if (img.width > 180 || img.height > 72) {
+        reject(`Image dimensions (${img.width}x${img.height}) exceed the maximum allowed size of 180x72 pixels.`);
+        return;
+      }
+
+      // Image is valid
+      resolve({
+        width: img.width,
+        height: img.height,
+        file: file
+      });
+    };
+
+    img.onerror = function() {
+      URL.revokeObjectURL(objectUrl);
+      reject('Failed to load image. Please try a different file.');
+    };
+
+    img.src = objectUrl;
+  });
+}
+
+// Handle custom logo upload
+function handleCustomLogoUpload(file) {
+  validateCustomLogo(file)
+    .then(result => {
+      // Convert image to base64
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const dataURL = e.target.result;
+        const format = file.type === 'image/png' ? 'PNG' : 'JPEG';
+
+        // Cache the custom logo
+        logoCache['custom'] = {
+          data: dataURL,
+          format: format
+        };
+
+        // Update filename display
+        $('#custom-logo-filename').text(`✓ ${file.name} (${result.width}x${result.height})`);
+
+        // Regenerate PDF with new logo
+        generateDecklistPDF();
+
+        // Track custom logo upload
+        if (typeof posthog !== 'undefined') {
+          posthog.capture('custom_logo_uploaded', {
+            width: result.width,
+            height: result.height,
+            format: format
+          });
+        }
+      };
+      reader.readAsDataURL(file);
+    })
+    .catch(error => {
+      alert(error);
+      // Reset file input
+      $('#custom-logo-input').val('');
+      $('#custom-logo-filename').text('');
+    });
+}
+
+// Initialize custom logo upload functionality
+function initCustomLogoUpload() {
+  // Show/hide custom upload UI based on dropdown selection
+  $('#logo-select').on('change', function() {
+    const selectedLogo = $(this).val();
+
+    if (selectedLogo === 'custom') {
+      $('#custom-logo-upload').show();
+      // If no custom logo cached yet, prompt for upload
+      if (!logoCache['custom']) {
+        $('#custom-logo-filename').text('Please choose an image file');
+      }
+    } else {
+      $('#custom-logo-upload').hide();
+    }
+  });
+
+  // Trigger file input when button is clicked
+  $('#custom-logo-button').on('click', function() {
+    $('#custom-logo-input').click();
+  });
+
+  // Handle file selection
+  $('#custom-logo-input').on('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      handleCustomLogoUpload(file);
+    }
+  });
 }
 
 // ==================== DARK MODE FUNCTIONALITY ====================
