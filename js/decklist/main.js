@@ -2131,10 +2131,18 @@ function initAutocomplete() {
     const currentLine = lines[lines.length - 1];
 
     // Extract card name (after quantity like "4 " or "2x ")
-    const match = currentLine.match(/^\s*\d+x?\s+(.+)$/i);
+    const matchWithQuantity = currentLine.match(/^\s*\d+x?\s+(.+)$/i);
+    // Also match card name without quantity at the start of a line
+    const matchWithoutQuantity = currentLine.match(/^\s*([a-zA-Z].*)$/i);
 
-    if (match && match[1].length >= 2) {
-      const searchTerm = match[1].toLowerCase();
+    let searchTerm = null;
+    if (matchWithQuantity && matchWithQuantity[1].length >= 2) {
+      searchTerm = matchWithQuantity[1].toLowerCase();
+    } else if (matchWithoutQuantity && matchWithoutQuantity[1].length >= 2) {
+      searchTerm = matchWithoutQuantity[1].toLowerCase();
+    }
+
+    if (searchTerm) {
       showAutocomplete(textarea, searchTerm);
     } else {
       hideAutocomplete();
@@ -2237,9 +2245,9 @@ function initAutocomplete() {
     const currentLineStart = textBeforeCursor.lastIndexOf('\n') + 1;
     const currentLine = lines[lines.length - 1];
 
-    // Extract quantity
+    // Extract quantity, default to "1 " if none present
     const match = currentLine.match(/^\s*(\d+x?\s+)/i);
-    const quantity = match ? match[1] : '';
+    const quantity = match ? match[1] : '1 ';
 
     // Replace current line with selected card
     const newText = text.substring(0, currentLineStart) + quantity + cardName + textAfterCursor;
