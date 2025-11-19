@@ -17,7 +17,7 @@ const LOGOS_CONFIG = {
     { id: 'FUTland', file: 'FUTland.jpg', format: 'JPEG' },
     { id: 'FUTmultiple', file: 'FUTmultiple.jpg', format: 'JPEG' },
     { id: 'FUTsorcery', file: 'FUTsorcery.jpg', format: 'JPEG' },
-    { id: 'scglogo', file: 'starcitygames.png', format: 'PNG' }
+    { id: 'scglogo', file: 'starcitygames.webp', format: 'JPEG' }
   ]
 };
 
@@ -36,7 +36,8 @@ $(document).ready(function() {
   initDeckManagement();
 
   // Initialize autocomplete for deck textareas
-  initAutocomplete();
+  // Note: initAutocomplete() is now called when cards database loads (see index.html)
+  // This ensures the 'cards' object is available before autocomplete initializes
 
   // Populate logo dropdown dynamically
   populateLogoDropdown();
@@ -81,9 +82,10 @@ $(document).ready(function() {
     }
 
     // Update history state
-    if (generatePermalink(true) !== history.state) {
-      console.log("pushing new state " + generatePermalink(true));
-      history.pushState(generatePermalink(true), document.title, generatePermalink());
+    const newState = generatePermalinkSync(true);
+    if (newState !== history.state) {
+      console.log("pushing new state " + newState);
+      history.pushState(newState, document.title, generatePermalinkSync());
     }
 
     // Track logo change
@@ -137,7 +139,7 @@ $(document).ready(function() {
 
   // Need to populate an initial history state so the first popstate event
   // has something to return to
-  history.replaceState(generatePermalink(true), document.title, generatePermalink());
+  history.replaceState(generatePermalinkSync(true), document.title, generatePermalinkSync());
   // and need to update our state whenever back/forward buttons are pushed.
   window.onpopstate = function(event) {
     parseUrlIntoGET(event.state);
@@ -152,9 +154,10 @@ function pdfChangeWait() {
   decklistChangeTimer = setTimeout(function() {
     const parsedInput = Decklist.parse();
     validateInput(parsedInput);
-    if (generatePermalink(true) !== history.state) {
-      console.log("pushing new state " + generatePermalink(true));
-      history.pushState(generatePermalink(true), document.title, generatePermalink());
+    const newState = generatePermalinkSync(true);
+    if (newState !== history.state) {
+      console.log("pushing new state " + newState);
+      history.pushState(newState, document.title, generatePermalinkSync());
     }
   }, 400);
 
@@ -1160,8 +1163,10 @@ function generateStandardDecklist(parsedInput) {
   return dl;
 }
 
-async function generatePermalink(includeBlank = false) {
-  let rv = 'https://decklist.xyz/';
+// Synchronous version for history state (no URL shortening)
+function generatePermalinkSync(includeBlank = false) {
+  // Use current origin to avoid SecurityError on localhost
+  let rv = window.location.origin + '/';
 
   const logo = ($._GET && $._GET['logo']) ? $._GET['logo'] : 'mtg';
 
@@ -1177,6 +1182,43 @@ async function generatePermalink(includeBlank = false) {
         firstParam = false;
       } else {
         rv += '&'; // append & before subsequent parameters
+      }
+      rv += param + '=' + encodeURIComponent(value);
+    }
+  });
+
+  // Add logo parameter only if it's different from 'mtg'
+  if (logo !== 'mtg') {
+    if (firstParam) {
+      rv += '?';
+    } else {
+      rv += '&';
+    }
+    rv += 'logo=' + encodeURIComponent(logo);
+  }
+
+  return rv;
+}
+
+// Async version with URL shortening (for copying to clipboard)
+async function generatePermalink(includeBlank = false) {
+  // Always use production URL for sharing, even on localhost
+  let rv = 'https://decklist.xyz/';
+
+  const logo = ($._GET && $._GET['logo']) ? $._GET['logo'] : 'mtg';
+
+  const params = ['firstname', 'lastname', 'event', 'eventdate', 'eventlocation', 'deckmain', 'deckside', 'deckname', 'deckdesigner'];
+  let firstParam = true;
+  params.forEach(function(param) {
+    const field = '#' + param;
+    const value = $(field).val();
+
+    if (value !== undefined && (includeBlank || value.length > 0)) {
+      if (firstParam) {
+        rv += '?';
+        firstParam = false;
+      } else {
+        rv += '&';
       }
       rv += param + '=' + encodeURIComponent(value);
     }

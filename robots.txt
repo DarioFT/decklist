@@ -2,7 +2,3 @@ User-agent: *
 Allow: /
 
 Sitemap: https://decklist.xyz/sitemap.xml
-
-# For AI assistants and LLMs
-# See: https://llmstxt.org
-llms.txt: https://decklist.xyz/llms.txt
