@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Documentation & FAQ - MTG Decklist Generator | decklist.xyz</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Complete documentation and frequently asked questions for decklist.xyz - the free MTG tournament registration sheet generator. Learn how to use all features and formats.">
+  <meta name="keywords" content="MTG decklist help, decklist generator tutorial, MTGO format, MTG Goldfish format, tournament registration help, WotC decklist guide">
+  <meta name="author" content="decklist.xyz">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://decklist.xyz/docs.html">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://decklist.xyz/docs.html">
+  <meta property="og:title" content="Documentation & FAQ - MTG Decklist Generator">
+  <meta property="og:description" content="Complete documentation and frequently asked questions for decklist.xyz - the free MTG tournament registration sheet generator.">
+  <meta property="og:image" content="https://decklist.xyz/images/logos/mtg.jpg">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://decklist.xyz/docs.html">
+  <meta property="twitter:title" content="Documentation & FAQ - MTG Decklist Generator">
+  <meta property="twitter:description" content="Complete documentation and frequently asked questions for decklist.xyz.">
+  <meta property="twitter:image" content="https://decklist.xyz/images/logos/mtg.jpg">
+
+  <!-- FAQ Schema for Rich Snippets -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How do I use the MTG decklist generator?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Simply paste your deck from MTGO, MTG Goldfish, Tappedout, or any supported format into the Main Deck field. The generator will automatically parse your cards, validate them, and create a tournament-ready PDF registration sheet for WotC or SCG events."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What deck formats are supported?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Our decklist generator supports MTGO (Magic Online), MTG Goldfish, Tappedout, MTG Salvation, Deckbox Print format, and MWS (Magic Workstation) formats. You can paste decklists directly without needing to separate the sideboard."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I create both WotC and SCG registration sheets?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes! You can choose between Wizards of the Coast (WotC) official tournament registration sheets or Star City Games (SCG) format sheets using the decksheet format selector."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I save and share my decklist?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Use the Copy Permalink button to generate a unique URL that pre-fills all your deck information. You can share this link with others or use it to quickly load your deck later. You can also save decklists locally using the Save Decklist button."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Does the generator validate card legality?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes! The generator automatically validates your cards against our database and will warn you if your deck contains fewer or more than 60 cards in the main deck."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I customize the logo on my decklist?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Absolutely! You can choose from various MTG logos or upload your own custom logo (max 180x72 pixels, JPEG or PNG format) to personalize your tournament registration sheet."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is this decklist generator free to use?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, decklist.xyz is completely free to use. Generate unlimited tournament registration sheets for Magic: The Gathering events without any cost or registration required."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+  <link rel="stylesheet" type="text/css" href="css/decklist.css">
+
+  <!-- jQuery -->
+  <script type="text/javascript" src="js/jquery/jquery-3.1.1.min.js"></script>
+
+  <!-- Dark mode script -->
+  <script>
+    // Initialize dark mode from localStorage before page renders
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.documentElement.classList.add('dark-mode');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const body = document.body;
+      const darkModeToggle = document.getElementById('darkModeToggle');
+      const darkModeIcon = document.getElementById('darkModeIcon');
+
+      // Apply saved dark mode preference
+      const isDarkMode = localStorage.getItem('darkMode') === 'true';
+      if (isDarkMode) {
+        body.classList.add('dark-mode');
+        darkModeIcon.textContent = '☀️';
+      }
+
+      // Toggle dark mode
+      darkModeToggle.addEventListener('click', function() {
+        body.classList.toggle('dark-mode');
+        const isDark = body.classList.contains('dark-mode');
+
+        // Update icon
+        darkModeIcon.textContent = isDark ? '☀️' : '🌙';
+
+        // Save preference
+        localStorage.setItem('darkMode', isDark);
+      });
+
+      // Initialize random rarity icon
+      const rarities = ['common', 'uncommon', 'rare', 'mythic'];
+      const randomRarity = rarities[Math.floor(Math.random() * rarities.length)];
+      const iconElement = document.getElementById('rarityIcon');
+
+      if (iconElement) {
+        iconElement.classList.add(randomRarity);
+
+        // Add click handler to cycle through rarities
+        iconElement.addEventListener('click', function() {
+          const currentRarity = rarities.find(r => iconElement.classList.contains(r));
+          const currentIndex = rarities.indexOf(currentRarity);
+          const nextIndex = (currentIndex + 1) % rarities.length;
+
+          // Remove current rarity class and add next one
+          iconElement.classList.remove(currentRarity);
+          iconElement.classList.add(rarities[nextIndex]);
+        });
+
+        // Make it look clickable
+        iconElement.style.cursor = 'pointer';
+      }
+
+      // Update year
+      document.getElementById('current-year').textContent = new Date().getFullYear();
+    });
+  </script>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-brand">
+        <div class="brand-icon" id="rarityIcon"></div>
+        <a href="/" style="text-decoration: none; color: inherit;">
+          <span class="brand-text">decklist<span class="brand-highlight">.xyz</span></span>
+        </a>
+      </div>
+      <h1>FREE MTG TOURNAMENT DECKLIST GENERATOR</h1>
+      <div class="navbar-links">
+        <a href="/">← Generator</a>
+      </div>
+      <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle dark mode">
+        <span id="darkModeIcon">🌙</span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="wrapper">
+    <div class="docs-container">
+      <h2 class="docs-title">Documentation & FAQ</h2>
+
+      <nav class="docs-nav">
+        <a href="#getting-started">Getting Started</a>
+        <a href="#faq">FAQ</a>
+        <a href="#formats">Supported Formats</a>
+      </nav>
+
+      <!-- Getting Started Section -->
+      <section id="getting-started" class="docs-section">
+        <h2>Getting Started</h2>
+        <p>Welcome to decklist.xyz! This free tool helps you generate professional tournament registration sheets for Magic: The Gathering events in seconds.</p>
+
+        <div class="docs-subsection">
+          <h3>Quick Start Guide</h3>
+          <ol>
+            <li><strong>Enter your information:</strong> Fill in your name and DCI number (optional)</li>
+            <li><strong>Add event details:</strong> Event name, date, and location</li>
+            <li><strong>Paste your deck:</strong> Copy your decklist from MTGO, MTG Goldfish, or Tappedout and paste it directly</li>
+            <li><strong>Choose format:</strong> Select WotC (Wizards of the Coast) or SCG (Star City Games) sheet format</li>
+            <li><strong>Download:</strong> Click "Download PDF" to get your tournament-ready registration sheet</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- FAQ Section -->
+      <section id="faq" class="docs-section">
+        <h2>Frequently Asked Questions</h2>
+
+        <div class="faq-item">
+          <h3>How do I use the MTG decklist generator?</h3>
+          <p>Simply paste your deck from MTGO, MTG Goldfish, Tappedout, or any supported format into the "Main Deck" field. The generator will automatically parse your cards, validate them, and create a tournament-ready PDF registration sheet for WotC or SCG events.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>What deck formats are supported?</h3>
+          <p>Our decklist generator supports MTGO (Magic Online), MTG Goldfish, Tappedout, MTG Salvation, Deckbox "Print" format, and MWS (Magic Workstation) formats. You can paste decklists directly without needing to separate the sideboard.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Can I create both WotC and SCG registration sheets?</h3>
+          <p>Yes! You can choose between Wizards of the Coast (WotC) official tournament registration sheets or Star City Games (SCG) format sheets using the decksheet format selector.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>How do I save and share my decklist?</h3>
+          <p>Use the "Copy Permalink" button to generate a unique URL that pre-fills all your deck information. You can share this link with others or use it to quickly load your deck later. You can also save decklists locally using the "Save Decklist" button.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Does the generator validate card legality?</h3>
+          <p>Yes! The generator automatically validates your cards against our database and will warn you if your deck contains fewer or more than 60 cards in the main deck.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Can I customize the logo on my decklist?</h3>
+          <p>Absolutely! You can choose from various MTG logos or upload your own custom logo (max 180x72 pixels, JPEG or PNG format) to personalize your tournament registration sheet.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Is this decklist generator free to use?</h3>
+          <p>Yes, decklist.xyz is completely free to use. Generate unlimited tournament registration sheets for Magic: The Gathering events without any cost or registration required.</p>
+        </div>
+
+        <div class="faq-item">
+          <h3>Do I need to create an account?</h3>
+          <p>No! decklist.xyz works entirely in your browser without any registration. Your deck information never leaves your computer unless you choose to share a permalink.</p>
+        </div>
+      </section>
+
+      <!-- Supported Formats Section -->
+      <section id="formats" class="docs-section">
+        <h2>Supported Deck Formats</h2>
+
+        <div class="docs-subsection">
+          <h3>MTGO (Magic Online)</h3>
+          <p>Export your deck from Magic Online and paste it directly. The format looks like:</p>
+          <pre><code>4 Lightning Bolt
+4 Counterspell
+20 Island
+
+Sideboard
+3 Negate
+2 Dispel</code></pre>
+        </div>
+
+        <div class="docs-subsection">
+          <h3>MTG Goldfish</h3>
+          <p>Copy your deck from MTGGoldfish using the "Export" → "Text" option. Both main deck and sideboard will be parsed automatically.</p>
+        </div>
+
+        <div class="docs-subsection">
+          <h3>Tappedout</h3>
+          <p>Use Tappedout's "Text" export format. Click on your deck, then select the "Text" view and copy everything.</p>
+        </div>
+
+        <div class="docs-subsection">
+          <h3>Manual Entry</h3>
+          <p>You can also manually type your deck in this format:</p>
+          <pre><code>Quantity CardName
+4 Lightning Bolt
+3 Snapcaster Mage</code></pre>
+        </div>
+      </section>
+
+      <!-- Direct Linking Section -->
+      <section id="direct-linking" class="docs-section">
+        <h2>Direct Linking</h2>
+        <p>You can create custom URLs that pre-fill the decklist generator with specific information. This is perfect for:</p>
+        <ul>
+          <li>Tournament organizers pre-filling event information</li>
+          <li>Deck building websites integrating with decklist.xyz</li>
+          <li>Sharing pre-configured decklists with friends</li>
+        </ul>
+        <p>For detailed instructions, see our <a href="https://github.com/DarioFT/decklist#direct-linking">GitHub documentation</a>.</p>
+      </section>
+
+    </div>
+
+    <div class="footer">
+      Magic: The Gathering Decklist Generator. Please send any feedback or contributions <a href="https://github.com/DarioFT/decklist">via GitHub</a>.
+      <br><br>
+      © 1993-<span id="current-year"></span> Wizards of the Coast, Magic: The Gathering, and their logos are trademarks of Wizards of the Coast LLC, a subsidiary of Hasbro, Inc. All rights reserved.
+      <br>
+      This website is independent and not affiliated with the aforementioned brands.
+    </div>
+  </div>
+</body>
+</html>
