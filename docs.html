@@ -292,13 +292,70 @@ Sideboard
           <li>Deck building websites integrating with decklist.xyz</li>
           <li>Sharing pre-configured decklists with friends</li>
         </ul>
-        <p>For detailed instructions, see our <a href="https://github.com/DarioFT/decklist#direct-linking">GitHub documentation</a>.</p>
+
+        <div class="docs-subsection">
+          <h3>Available URL Parameters</h3>
+          <p>Simply add these parameters to the URL to pre-fill form fields:</p>
+
+          <h4>Personal Information</h4>
+          <ul>
+            <li><strong>firstname</strong> - Participant's first name (e.g., April)</li>
+            <li><strong>lastname</strong> - Participant's last name (e.g., King)</li>
+          </ul>
+
+          <h4>Event Information</h4>
+          <ul>
+            <li><strong>event</strong> - Event name (e.g., RCQ Minneapolis)</li>
+            <li><strong>eventdate</strong> - Event date (e.g., 2027-12-31)</li>
+            <li><strong>eventlocation</strong> - Physical location (e.g., Minneapolis Convention Center)</li>
+          </ul>
+
+          <h4>Deck Information</h4>
+          <ul>
+            <li><strong>deckname</strong> - Deck name/archetype (e.g., "RUG Twin")</li>
+            <li><strong>deckdesigner</strong> - Designer's name</li>
+            <li><strong>deckmain</strong> - Main deck (use <code>%0A</code> for newlines, <code>%20</code> for spaces)</li>
+            <li><strong>deckside</strong> - Sideboard (use <code>%0A</code> for newlines, <code>%20</code> for spaces)</li>
+          </ul>
+
+          <h4>Display Options</h4>
+          <ul>
+            <li><strong>decksheet</strong> - Sheet format: <code>wotc</code> or <code>scg</code> (defaults to wotc)</li>
+            <li><strong>decksort</strong> - Sort order: <code>alphabetical</code>, <code>cmc</code>, <code>color</code>, <code>numeric</code>, <code>original</code>, or <code>type</code> (defaults to type)</li>
+            <li><strong>logo</strong> - Logo selection: <code>mtg</code>, <code>dci</code>, <code>elojodeugin</code>, or <code>custom</code></li>
+            <li><strong>disableediting</strong> - Prevent users from editing pre-filled fields</li>
+          </ul>
+
+          <p><strong>Store Logo:</strong> Tournament stores and organizers can contact us at <a href="mailto:info@decklist.xyz">info@decklist.xyz</a> to add their custom logo to the available options.</p>
+        </div>
+
+        <div class="docs-subsection">
+          <h3>Examples</h3>
+
+          <h4>Tournament Organizer - Unregistered Player</h4>
+          <pre><code>https://decklist.xyz/?eventdate=2027-12-31&event=RCQ%20Minneapolis&eventlocation=Minneapolis%20Convention%20Center</code></pre>
+
+          <h4>Tournament Organizer - Pre-registered Player</h4>
+          <pre><code>https://decklist.xyz/?firstname=April&lastname=King&eventdate=2027-12-31&event=RCQ%20Minneapolis&eventlocation=Minneapolis%20Convention%20Center</code></pre>
+
+          <h4>Deck Building Website Integration</h4>
+          <p>Pre-fill with a complete decklist (example shortened for readability):</p>
+          <pre><code>https://decklist.xyz/?deckmain=4%20Lightning%20Bolt%0A4%20Brainstorm%0A20%20Island&deckside=3%20Negate%0A2%20Dispel</code></pre>
+
+          <h4>Complete Example</h4>
+          <p>Everything together - personal info, event details, and full decklist:</p>
+          <pre><code>https://decklist.xyz/?firstname=April&lastname=King&eventdate=2027-12-31&event=RCQ%20Minneapolis&eventlocation=Minneapolis%20Convention%20Center&deckname=Miracles&deckdesigner=CubeApril&deckmain=4%20Brainstorm%0A4%20Force%20of%20Will%0A4%20Island</code></pre>
+
+          <p><strong>Important:</strong> When creating links, replace spaces with <code>%20</code> and use <code>%0A</code> for line breaks in deck lists.</p>
+        </div>
       </section>
 
     </div>
 
     <div class="footer">
-      Magic: The Gathering Decklist Generator. Please send any feedback or contributions <a href="https://github.com/DarioFT/decklist">via GitHub</a>.
+      Magic: The Gathering Decklist Generator.
+      <br>
+      Contact: <a href="mailto:info@decklist.xyz">info@decklist.xyz</a>
       <br><br>
       © 1993-<span id="current-year"></span> Wizards of the Coast, Magic: The Gathering, and their logos are trademarks of Wizards of the Coast LLC, a subsidiary of Hasbro, Inc. All rights reserved.
       <br>

@@ -1,0 +1,13 @@
+# Claude Code project instructions
+CLAUDE.md
+
+# Node modules
+node_modules/
+
+# Editor directories
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
