@@ -257,22 +257,6 @@ function parseGET() {
   }
 }
 
-// Detect if there is PDF support for the autopreview
-function PDFPreviewSupport() {
-  let showpreview = false;
-
-  // Safari and Chrome have application/pdf in navigator.mimeTypes
-  if (navigator.mimeTypes['application/pdf'] !== undefined) { showpreview = true; }
-
-  // Firefox desktop uses pdf.js, but not mobile or tablet
-  if (navigator.userAgent.indexOf('Firefox') !== -1) {
-    if ((navigator.userAgent.indexOf('Mobile') === -1) && (navigator.userAgent.indexOf('Tablet') === -1)) { showpreview = true; }
-    else { showpreview = false; } // have to reset it, as FF Mobile application/pdf listed, but not supported (wtf?)
-  }
-
-  return showpreview;
-}
-
 // Calls the appropriate decklist function based on user selection and returns resulting jsPDF object
 function generateDecklistLayout(parsedInput) {
   const decksheetFormat = $('#decksheetformatselector input[name=decksheetformat]:checked').prop('id').replace('decksheet-', '');
@@ -1277,12 +1261,6 @@ async function copyPermalinkToClipboard() {
 function generateDecklistPDF(outputtype = 'dataurlstring') {
   // clear the input timeout before we can generate the PDF
   pdfChangeTimer = null;
-
-  // don't generate the preview if showpreview === false
-  if ((outputtype === 'dataurlstring') && !PDFPreviewSupport()) {
-    $('#decklistpreview').empty();
-    $('#decklistpreview').html('Automatic decklist preview only supported in non-mobile Firefox, Safari, and Chrome.<br /><br />');
-  }
 
   // Parse the deck list
   const parsedInput = Decklist.parse();
